@@ -1,20 +1,22 @@
 # Anycubic Kobra 3 Max: The Long Way Round
 
-*A real ownership log — twelve days from unboxing to a fully custom, LAN-only monitoring and calibration setup: the mesh-repair bug that broke every calibration wizard, two real firmware lockups, a decrypted `.swu`, and three original apps built to fill the gaps stock firmware leaves open.*
+*A real ownership log, running from unboxing onward and updated as new days add to it: the mesh-repair bug that broke every calibration wizard, two real firmware lockups, a decrypted `.swu`, a genuine virtual printer, and a small family of original apps built to fill the gaps stock firmware leaves open.*
 
-This is a journey log, not an install or calibration manual — read it for what actually happened and why, not as a step-by-step to follow blind.
+This is a running journey log, not an install or calibration manual — written for two kinds of reader: someone deciding whether to buy this printer at all, and an existing owner weighing up whether to give something like Rinkhals another go after bouncing off it once already. Read it for what actually happened and why, not as a step-by-step to follow blind — and check back, since it keeps growing as more gets found.
 
 > new k3m, rinkhals installed, printer ran but hard to callibrate, went back to stock and slicer next, printer ran heaps quieter but can't monitor, build a webui, most of the slicer next cal prints have manifold issue, repair and run prints with no cal settings after repair, get frustrated try building a cal tool, play some more with slicer next and worked out not to repair after trying orca 3mf and gcode, gcode crashed the printer, it has been a hell of time to callibrate and get clean prints
 >
 > — *the whole story, in one breath, as I described it to Claude at 6:30am after the calibration marathon that finally cracked it*
 
-This is the full log, not the highlight reel. If you've just bought a Kobra 3 Max, the short version is: it's a good printer, but the calibration wizards in Anycubic's own slicer are quietly broken in a way that produces flat, useless results if non-manifold errors are repaired, and stock firmware gives you no way to watch a print from anywhere except standing in front of it if you don't want to use their cloud. Everything below is what actually happened figuring both of those out, plus this printer's own real, tested calibration numbers (a starting point, not a universal answer — see [Chapter 5](#chapter-5-my-confirmed-calibration)) and the tools that came out of it.
+This printer gets a lot of "do not buy" reviews and give-up stories out there — plenty of people bounce off it hard, and I watched a fair few of those videos myself before deciding to go ahead anyway. None of it says those reviewers were wrong about what they hit. This log isn't here to argue with them; it's here because a warning without the detail behind it doesn't tell you whether a problem is fixable, temporary, or just how the machine is — and every issue in this log turned out to have a real answer once it got chased down properly.
 
-> **A note on how this got built.** I've got 25 years in IT, and yes, I did and do use AI to help build the tools in this guide. No apology for that — AI can write in minutes what would genuinely take me months, and every technical claim below was verified against real hardware before it went in, not taken on faith from a chatbot. The judgment calls, the debugging instincts, and every hour actually spent staring at a printer were mine. The typing speed just isn't the point people think it is.
+This is the full log, not the highlight reel. If you've just bought a Kobra 3 Max, the short version is: it's a good printer, but the calibration wizards in Anycubic's own slicer are quietly broken in a way that produces flat, useless results if non-manifold errors are repaired, and stock firmware gives you no way to watch a print from anywhere except standing in front of it if you don't want to use their cloud. If you already own one and tried (and maybe abandoned) something like Rinkhals before, Chapter 1 is written directly for you — a real account of what it's actually like, including the rough edges, not a sales pitch either way. Everything below is what actually happened figuring all of this out, plus this printer's own real, tested calibration numbers (a starting point, not a universal answer — see [Chapter 5](#chapter-5-my-confirmed-calibration)) and the tools that came out of it.
 
-## The 12 Days
+> **A note on how this got built.** I've spent decades working in IT, and yes, I did and do use AI (Claude) heavily to help build the tools in this guide — whole features that would've taken me months by hand come together in minutes to hours instead. No apology for that. What's mine is the experience behind every decision along the way: knowing what was actually worth building, telling a real fix apart from one that just sounds plausible, and verifying every technical claim below against real hardware before it went in, not taking it on faith from a chatbot. The typing speed was never the part that mattered.
 
-Skip to any chapter below for the full depth. This is just the shape of it.
+## The Days So Far
+
+Skip to any chapter below for the full depth. This is just the shape of it — new rows get added as new days happen.
 
 | Day | | |
 |---|---|---|
@@ -26,6 +28,8 @@ Skip to any chapter below for the full depth. This is just the shape of it.
 | **D11** | **The real bug, and two real lockups** | Found the actual cause (mesh repair silently orphans calibration settings) while, in parallel, testing OrcaSlicer as an alternative — which hard-locked the printer twice, later traced to a command-flooding bug in its Klipper output. |
 | **D11-12** | **Firmware archaeology** | Decrypted the real `.swu` firmware package (publicly known password, zero risk), read the actual Go server binaries, and got ground-truth answers no documentation anywhere provides — real safety limits, the real upload pipeline, the real USB update trigger. |
 | **D12** | **Clean prints, for real** | Full calibration confirmed against real hardware — temperature, flow, pressure advance, retraction, max volumetric speed, all three speed modes. Kobra LAN Monitor packaged into a proper installer and released. A second print-quality mystery (blobby embossed text) traced to a slicer wall-order setting, not the calibration at all. |
+| **D13** | **Cloud gets bypassed a second time, and a virtual printer gets built** | Wanted firmware-update checking inside Kobra LAN Monitor too — found the printer's own check only works over its cloud connection, which LAN mode disables by design. Built a second genuinely cloud-free path instead, reorganised the dashboard into Home and Advanced tabs to make room for it, and along the way got the real firmware binary itself running as a genuine virtual printer, so future features can be tried safely without touching real hardware mid-print. |
+| **D14** | **Multi-printer support, and the virtual printer gets its real identity** | Added support for more than one printer to Kobra LAN Monitor — a real gap for anyone with more than one Anycubic machine, even though this one only has one. Separately, fed the virtual printer its real account credentials for the first time and watched the failure reason genuinely change, confirming the account side is correct — only the physical printer's own certificate is still missing. The old calibration-generator tool and its planned on-printer addon were both retired, superseded by the real fixes found along the way. |
 
 ---
 
@@ -82,6 +86,18 @@ Every feature below is confirmed against a real, running printer — not just "t
 > **A camera that isn't the official one, works fine.** A generic USB webcam (Microsoft LifeCam HD-3000, 720p) works cleanly on completely stock firmware, no hacking required — despite Anycubic's own documentation implying you need their specific camera module. A higher-resolution camera (Razer Kiyo, 1080p) was also detected and streamed, but with a "doubled frame" artifact — reproduced identically in Anycubic's own Slicer Next too, so it's the printer's onboard video pipeline mishandling the higher resolution, not a fixable client-side bug. A 720p webcam is the safer bet until this gets more data points.
 
 Getting here wasn't friction-free. A silent stale-connection bug (the dashboard would keep showing "Connected" with hours-old data after the socket had actually died, because nothing was probing it) only surfaced during a genuine multi-hour soak test — exactly the scenario the app exists for. Fixed with an explicit MQTT keepalive plus an application-level staleness watchdog, then re-confirmed with a full overnight soak test before calling it done.
+
+### A second cloud workaround: firmware updates, and a proper Advanced tab
+
+The one feature stock firmware still gates behind a cloud connection turned out to be checking for its own updates. Digging into the printer's real update protocol (the same binary-string-reading approach from Chapter 4, applied to this printer's own MQTT service) found there's no command to actively ask "is there an update" at all — the printer just reports its current version automatically whenever its own cloud connection comes up, and Anycubic's server replies on a separate topic if it feels like it. In LAN mode, with no cloud connection, there's simply nothing to overhear.
+
+> **A real attempt at beating the cloud outright, before settling for working around it.** Before landing on the manifest approach below, a live network packet capture (LAN mode briefly switched off between prints, purely to observe) confirmed the printer's cloud connection genuinely works — a real TLS handshake to Anycubic's own MQTT broker, followed automatically by a real multi-kilobyte fetch from an Anycubic-owned cloud storage bucket, without a single "check now" action anywhere on the touchscreen. But that connection uses TLS 1.3, which encrypts the entire certificate exchange on both ends — there's genuinely nothing left to extract from the wire that way, no matter how much traffic gets captured. Confirming that dead end for certain, rather than assuming it, is what made the local-comparison approach the right call rather than a fallback.
+
+> **The fix was the same idea as the dashboard itself: don't need the cloud account at all.** The printer already reports its own current version locally, over the LAN protocol Kobra LAN Monitor already speaks. Comparing that against a small, self-maintained list of real published firmware versions — sourced from [Rinkhals' own community firmware mirror](https://github.com/jbatonnet/Rinkhals.Firmwares), since Anycubic doesn't publish a direct-download page for this printer at all — gives a real, working update check with no cloud account, no device pairing, nothing.
+
+Everything that isn't core, at-a-glance monitoring — checking for updates, disabling the steppers, reading the raw toolhead position, feeding/unwinding ACE Pro filament manually, browsing time-lapse video — moved to a second Advanced tab, so the main dashboard stays exactly what it was built to be: something to glance at, not read. Not every command on that page has been fired at a real printer yet either, so each one is labelled honestly with how sure it actually is: confirmed working, confirmed to exist in the firmware but untested, or an educated guess with no confirmation at all.
+
+> **Update, Day 13: exporting a video turned out to be a dead end worth explaining, not just a failed guess.** The Advanced tab originally offered an "Export" button next to each video, guessing at the real network command for it. It never worked — and reading the touchscreen's own code (rather than guessing further) explains exactly why: on the real device, Print → Videos → select a video → Export just calls a plain native file-copy function, directly, from internal storage to a USB drive plugged into the printer. No MQTT, no HTTP, no network step of any kind — confirmed both by testing it live (a USB stick, no prompt, silently does nothing without one) and in the decompiled code itself. It doesn't need a network command because the code doing the copying already runs on the printer itself, with direct access to both its own storage and the USB port. That's not something any remote app — this dashboard included — could ever trigger the same way, so the guess-tier Export button was removed rather than left in place pointing at something that can never work.
 
 ---
 
@@ -156,7 +172,35 @@ Go binaries keep readable function and string names unless deliberately stripped
 >
 > Separately, the USB-drive update trigger folder name is base64-obscured in the script (trivial to decode): drop an `update.swu` into a folder literally named `help_sos_` at the root of a USB drive, insert it, and the firmware detects and runs it automatically — no menu interaction at all. This is almost certainly the exact mechanism Rinkhals itself uses to install.
 
-None of this turned into a shipped addon — the actual plan (a self-hosted web UI running directly on the printer's own storage, reverse-proxied the same way this printer's other self-hosted services already are, replacing the separate always-on PC that Kobra LAN Monitor currently needs) is fully scoped but deliberately not started. The most promising lead for it: a Unix domain socket the firmware's own API config points at, which is very likely Klippy's own standard socket — the same one real Moonraker connects to on any normal Klipper install. If that's confirmed, a future addon wouldn't need to reverse-engineer the printer's proprietary API at all, just speak the same well-documented interface Moonraker already does.
+None of this turned into a shipped addon — the actual plan (a self-hosted web UI running directly on the printer's own storage, reverse-proxied the same way this printer's other self-hosted services already are, replacing the separate always-on PC that Kobra LAN Monitor currently needs) was scoped out, prototyped briefly, and then dropped once the LAN Monitor + Advanced-tab approach below covered the same ground without needing to touch the printer's own storage at all. The most promising lead for it, kept here in case it's ever worth revisiting from scratch: a Unix domain socket the firmware's own API config points at, which is very likely Klippy's own standard socket — the same one real Moonraker connects to on any normal Klipper install.
+
+### Building a virtual printer, so nothing has to risk the real one
+
+Three separate questions all pointed at the same next step:
+
+1. **What are the printer's real commands, exactly as the firmware itself defines them** — not inferred from someone else's partial write-up, not guessed by naming pattern, but read straight from the actual server software the printer runs.
+2. **How does the update system's cloud authentication actually work** — what a device genuinely needs (credentials, certificates, identity) to be accepted as "this specific printer" by Anycubic's own servers.
+3. **Why does the update-check system behave the way it does at all** — why LAN mode leaves it with nothing to report, and whether that's a gap in this dashboard or a real limit of the firmware itself.
+
+All three needed to poke directly at how the printer's own server software actually behaves under real conditions — and that's not something to do carelessly on a machine whose nozzle runs at 300°C, especially not mid-print. So the extracted firmware itself became the target: could the real server binary the physical printer actually runs be booted up as a virtual printer instead, safe to prod as hard as needed?
+
+It turned out yes, further than expected. Running that real ARM binary under an emulator, backed by a small stand-in for the Klipper layer it expects to talk to, got surprisingly far:
+
+> **A genuinely bootable virtual K3M, not just a binary that runs.** Once a handful of startup requirements were worked out one at a time — a device-identity file it insists isn't blank, a folder of certificate files in the exact format it expects, a hidden mode-flag file that turned out to gate the entire local network stack from starting at all — the emulator's local MQTT broker came up for real, genuine printer-shaped traffic flowing across it, alongside the exact same local network-discovery response a real printer gives out. Any app on the same network, including Kobra LAN Monitor itself, can be pointed at the emulator's address instead of the real printer's and go through the identical connect flow, none the wiser.
+
+That answered all three questions directly, from the source, rather than by inference:
+
+- **Real commands, ground truth.** With the actual firmware running and readable, every command Kobra LAN Monitor's Advanced tab uses (steppers, toolhead position, ACE Pro filament control, time-lapse video) could be confirmed as a genuine, literal command the firmware defines — not a guess dressed up to look confident.
+- **Cloud auth, confirmed.** The update-check cloud connection turned out to need its own, completely separate device identity — its own certificate and per-device credentials, tied to Anycubic's own account/activation system — genuinely different from the plain local network credential this dashboard already uses for everything else. One doesn't substitute for the other, settled directly rather than assumed.
+- **The update system's real reasoning, confirmed.** There is no "check now" command anywhere in the firmware at all. It reports its own version automatically the moment its cloud connection comes up, and Anycubic's server answers on a separate channel if it feels like it — which is exactly why LAN mode (no cloud connection at all) leaves nothing to report, and exactly why the cloud-free version check in the section above had to be built the way it was rather than just "fixing" a missing button.
+
+One genuine investigative bonus along the way: the emulator's own debug log turned out to be freely readable — a level of visibility into exactly what the firmware is thinking that was never available even with full owner access to the real printer's own export/diagnostic tools.
+
+> **Update, Day 14: the real device identity, tested for real — one piece confirmed working, one still missing.** The real account credentials (pulled straight off the printer using the same USB export feature already covered above — no SSH needed for this part) dropped into the emulator and changed the result immediately: the connection attempt went from being rejected at the security-handshake stage to being rejected afterward, by name, as "not authorized" — a completely different, later-stage failure. That's real forward progress, not a guess: the printer's own account identity is now confirmed correct and genuinely being used. What's left is the one piece that can't be reached the same easy way — the real per-device certificate itself, which never gets written anywhere a USB export can see. Recovering that needs a brief, careful visit from Rinkhals on the actual physical printer, purely to copy four files off before reverting straight back to stock.
+
+Not everything came along for the ride. The touchscreen interface and the camera service both depend on proprietary vendor graphics/media libraries that only exist on a real device's own storage, never published anywhere — including by the Rinkhals project itself, which patches the real UI binary in place rather than reimplementing it, for the same reason. That's a known, finite list now, not a vague gap.
+
+What this actually buys going forward: a safe place to try new ideas against real firmware behaviour first, with zero risk to a printer that might be mid-print at the time.
 
 ---
 
@@ -191,6 +235,8 @@ Retraction distance was the obvious first suspect (many small islands means many
 > **The real cause, found by reading the actual profile file.** Rather than keep guessing through the UI, reading the process profile's saved JSON directly (Slicer Next stores per-profile overrides in plain, readable files) surfaced it immediately: `wall_sequence` was set to **"Inner/Outer/Inner"** instead of the standard two-step order. That sequence sandwiches the visible outer wall between two inner passes — meaning every single closed loop in the model, including each tiny letter-stroke in embossed text, gets an extra start/stop transition compared to the normal order. More transitions per shape means more chances for a seam/wipe artifact to show up, concentrated right at each loop's restart point — which is exactly the pattern in the photos.
 >
 > Alongside it, `filament_max_volumetric_speed` was still sitting at 200mm³/s — a value deliberately raised during the max-flow calibration test itself (so the sweep wasn't artificially capped by the stock 13mm³/s default), but never brought back down to a real number afterward. Left at 200, it effectively disables the slicer's own protective flow-rate limiter entirely. Corrected to 20mm³/s — comfortably above what the current wall speeds actually need, but a real number again instead of "off."
+>
+> **Update, Day 13: tightened to 18mm³/s.** Once back to normal, non-calibration printing, 20mm³/s got pulled down further to 18mm³/s — closer to what everyday prints actually ask of it, rather than leaving extra headroom in "just in case."
 
 > **One more, purely physical lesson.** A separate thin-ring-shaped part failed for a completely different, much simpler reason: not enough bed contact area for reliable first-layer adhesion. The fix wasn't a slicer setting at all — a proper bed clean (soap, then isopropyl alcohol, then a fresh glue-stick layer) solved it outright. Worth remembering: not every print-quality problem is a calibration problem. Sometimes the plate's just dirty.
 
@@ -204,7 +250,7 @@ Nothing here started as a plan to "build tools" — each one exists because a sp
 
 ### [Kobra LAN Monitor](https://github.com/A-to-PC/kobra-lan-monitor) — Released
 
-Self-hosted web dashboard via the reverse-engineered local LAN/MQTT protocol. Live status, continuous camera stream, full file management, ACE filament/drying control, live controls — all confirmed against real hardware, no cloud account anywhere.
+Self-hosted web dashboard via the reverse-engineered local LAN/MQTT protocol. Live status, continuous camera stream, full file management, ACE filament/drying control, live controls, an Advanced tab for occasional-use extras, cloud-free firmware-update checking, an Auto/Light/Dark theme, and support for more than one printer (add, rename, and switch between them, one actively monitored at a time) — all confirmed against real hardware, no cloud account anywhere.
 
 ### [Kobra Time Lapse](https://github.com/A-to-PC/Kobra-Time-Lapse) — In testing
 
@@ -214,9 +260,9 @@ Watches the same LAN protocol for print state on completely stock firmware — n
 
 The same idea, for the other side of the fork: printers running Rinkhals with Moonraker. Polls Moonraker's own REST API for print state instead of the LAN protocol, so it works anywhere Moonraker already runs — never touches Klipper's config, so a fragile firmware setup can't be made worse by it. Left as-is since moving to stock firmware (Chapter 1) — it works, just isn't where new development is happening right now. That's a "not right now," not a "never": if Rinkhals goes back on, this is the one that reopens.
 
-### Kobra Calibration Generator — Reference tool
+### Kobra Calibration Generator — Retired
 
-Generates calibration test G-code directly as parametric geometry, bypassing Slicer Next's format entirely. Built out of frustration mid-investigation; now mainly useful as a reference for calibration parameters rather than an end-to-end pipeline. (Not published as its own repo.)
+Generated calibration test G-code directly as parametric geometry, bypassing Slicer Next's format entirely. Built out of frustration mid-investigation, back when Slicer Next's calibration wizards still looked broken (Chapter 3). Once the real fix turned up — don't repair the mesh, just set the range and slice — this tool's whole reason to exist went with it, so it was retired rather than kept around as dead weight. (Was never published as its own repo.)
 
 *Kobra Time Lapse and 3D Time Lapse look almost identical on the surface, but they're genuinely separate tools for two different setups, not two versions of one app — pick whichever matches your firmware.*
 
@@ -244,6 +290,7 @@ If you only read one section, read this one.
 - [x] **Thin, small-footprint parts need real bed prep, not just calibration.** Soap, then isopropyl alcohol, then fresh glue stick — solved an adhesion failure no slicer setting could.
 - [x] **A "success" message from an app or slicer means nothing for real hardware.** Only the printer's own screen, sound, or visible behaviour counts as confirmation — this bit multiple times during upload-path debugging.
 - [x] **If ACE Pro auto-backup keeps swapping colours mid-print, check the printer's own backup setting.** Left on its default, it substitutes by material type only, not colour — tightening or disabling it in the printer's own settings, not a firmware bug, is what fixed it here.
+- [x] **On LAN mode, don't expect Anycubic's own "check for updates" to work at all.** It only functions over the cloud connection LAN mode deliberately disables. Compare your printer's reported version against a public firmware list yourself instead of waiting on it.
 
 ---
 
