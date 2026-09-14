@@ -401,6 +401,32 @@ A contoured foam plug (matching the internal duct shape, not just a flat tape pa
 
 ---
 
+## Reference: The Bench, Enclosure & Filament Dryer Build
+
+> This is a real, physical build documented directly from memory rather than from photos taken during construction — photos to follow once there's a batch ready to add. Everything below is built, not planned; where an earlier design choice changed once it actually got built, this reflects the real, current version.
+
+The whole thing is one combined structure: a filament storage/dryer base built from 4 pallets, with a fully enclosed housing for the printer itself sitting on top.
+
+### The base — filament storage and dryer
+
+Four pallets, screwed together, enclosed on 7 sides with 12mm plywood. The 8 fork openings across the 4 pallets become 8 drawers, each holding 10 filament spools — 80 spools of storage capacity in total. The remaining left side of the pallets is fitted out as general-purpose cupboards, separate from the filament drawers.
+
+Climate control for the drawers: an STC-3028 humidity controller (mounted bottom right, above the dehumidifier's own clear door) drives a 12V 200W heat pad plus a 12V constant-running fan for circulation. A custom-built dehumidifier sits in the bottom front section, under the poop-catcher part of the printer enclosure directly above it.
+
+### The enclosure — housing for the K3M itself
+
+A complete enclosure around the printer, with the purge/poop catcher built into the right-hand side. A full-size clear door across the front gives full access to the printer; a smaller clear door on the right, overlapping the bench by 100mm wider and running full height, gives dedicated access to the poop catcher.
+
+Inside the poop catcher, a cloth baffle stops purge strings rebounding back onto the bed, and an angled floor feeds everything that lands toward the front for easy clean-out. The back half of the right side, behind the poop catcher, opens separately for maintenance access.
+
+The top front of the poop catcher houses the W3230 temperature controller, driving an active 12V exhaust fan set to trigger at 28°C. Lighting is a dimmable, switched 4000K COB LED strip. An arm-mounted 1080p EZVIZ camera handles timelapse duty — the real camera behind [Kobra Time Lapse](https://github.com/A-to-PC/Kobra-Time-Lapse)'s footage. A filtered inlet routes fresh air specifically under the printer for PSU cooling while it's running.
+
+### ACE Pro and the roller-bearing tube pass-through
+
+The ACE Pro sits on top of the whole enclosure rather than beside it, with its filament tubes running down in through the top. They pass through a roller bearing at the entry point, so the tubes can move smoothly with the toolhead's own Z travel instead of dragging or kinking against a fixed opening.
+
+---
+
 ## Reference: The Tools This Left Behind
 
 Nothing here started as a plan to "build tools" — each one exists because a specific, real gap kept getting in the way.
