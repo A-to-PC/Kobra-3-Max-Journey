@@ -32,6 +32,7 @@ Skip to any chapter below for the full depth. This is just the shape of it — n
 | **D14** | **The virtual printer gets its real identity, and a real answer on usage tracking** | Added multi-printer support to Kobra LAN Monitor. A brief, planned Rinkhals revisit pulled the virtual printer's real certificate — the cloud connection genuinely works now, question closed. The same visit, plus the factory restore that followed it, settled a real open question: the printer's lifetime usage stat survives a reset, but only for cloud-connected use — running LAN-only makes all real usage invisible to it, for better and for worse. The old calibration-generator tool and its planned on-printer addon were both retired, superseded by the real fixes found along the way. |
 | **D15** | **Making the ACE Pro actually automatic: RFID filament tags** | Programmed a blank NFC/RFID tag so the ACE Pro identifies a spool's material and colour on its own instead of setting it by hand every load. A generic NFC app permanently locked the first tag before it was even readable; a purpose-built filament-tag app got a real one working, confirmed live on the printer and cross-checked with a manual-override test. |
 | **D15** | **Advanced tab's false failures, finally explained** | Four Advanced-tab commands had been failing with a misleading "no connection" message despite a genuinely live session — traced to the printer answering with a real reply that just never echoes back the request's own ID. Fixed, and one of the four (toolhead position) turned out to be genuinely working all along once the app could actually see the reply. The other three send cleanly but still show no confirmed physical effect on the real printer — an honest, still-open finding, not a bug left in place. |
+| **D16** | **Tearing down a spare toolhead for real fan and duct answers** | A hunch that a better part-cooling fan alone might fix a print-quality issue turned into a real teardown of a spare toolhead, reading the actual fan's label rather than guessing from Anycubic's own (wrong) spec page. Found a genuine, better-on-every-axis replacement fan, and worked out a real, reasoned case for partially blocking the cooling duct — confirmed which openings actually align with the nozzle rather than guessing. |
 
 ---
 
@@ -316,6 +317,67 @@ It could:
 ### What this confirms, and what's still open
 
 The ACE Pro's tag format is compatible with a mainstream, purpose-built Android filament-tag app — not locked to Anycubic's own pre-programmed tags, and not something that needed reverse-engineering from scratch the way the LAN protocol did in Chapter 2. Two things not yet confirmed: which of the ACE Pro's two internal RFID reader antennas actually serves which of the four slots (a real per-slot mapping test, not done yet), and whether other materials/colours beyond this one write hold up the same way. Both are straightforward follow-up tests, not open questions about whether the approach works at all.
+
+---
+
+## Chapter 9: Tearing Down a Spare Toolhead for Real Fan Answers
+
+> **TL;DR** — A hunch that the toolhead's existing cooling duct might already be good enough, and a better fan alone could improve print cooling, turned into a real teardown of a spare toolhead rather than guessing from marketing specs. Found the real fan (Anycubic's own product page has the wrong dimension for it), a genuine better-on-every-axis replacement, and worked out a real, reasoned case for partially blocking the cooling duct — using an actual diagram of where each opening lines up with the nozzle, not a guess.
+
+Print-quality chasing (Chapter 6, and a real one this session too — a wall-to-floor gap fixed by raising infill/wall overlap from 10% to 25%) kept circling back to the same question: is the toolhead's cooling actually good, or is the duct itself the bottleneck? A close look at the physical design suggested the duct geometry into the hotend's magnet cover was already reasonable — which would mean a better fan, not a new duct, was the real lever worth pulling.
+
+### Opening a spare, not the printer that's running
+
+All of this happened on a boxed spare toolhead, never the one actually printing — zero risk to anything mid-job.
+
+![The K3M toolhead assembly, unopened](images/fan-upgrade/toolhead-front.jpg)
+
+Getting inside corrected a few assumptions immediately. There are genuinely **two separate fans**, not one:
+
+- A **50mm fan on the front**, ducted straight down to nozzle-tip height — a textbook part-cooling design, confirmed both by the physical duct path and by the firmware itself (Klipper's `[fan]` object on `nozzle_mcu:PB6` in the real `printer.cfg`, extracted back in Chapter 4).
+- A **20mm fan on the side**, blowing directly over the silicone sock covering the heater block. That's not part cooling at all — it's heat-creep prevention, keeping the heatbreak/heatsink area cool enough that filament doesn't soften too high up and jam. Matches Klipper's `[heater_fan extruder_fan]` object on a separate pin. Upgrading this one would help long-term reliability, not print quality.
+
+Both fans turned out to be genuinely simple 2-wire (power only) connections, not 4-wire PWM — the PWM control the firmware clearly does exists, it just happens on the toolhead's own local board (labelled `PrintHead_NF030_V1.7`) via its own switching transistor on the power line, not a separate signal wire to the fan. That's a useful, concrete finding on its own: **any genuine 24V 2-wire DC fan is electrically compatible** as a replacement here, not just something marketed as "4-wire PWM."
+
+### The real fan, read off its own label
+
+Anycubic's own product page for this part (SKU S010229) states 50×50×**20mm**. Reading the label directly off the actual physical fan — then confirming with calipers after removing the magnet cover — settled it: the real part is 50×50×**15mm**. Anycubic's own published spec is simply wrong for this part.
+
+![The stock fan's own label — CoolCox BF5015H24S, 24V, 0.15A](images/fan-upgrade/coolcox-label.jpg)
+
+The real part: **CoolCox BF5015H24S**, 24V DC, 0.15A. A real, searchable manufacturer part number beats a vague marketing spec every time — from here, CoolCox's own official datasheet for the fan's 20mm sibling (same "H" performance tier, same 0.15A current) gave a genuine number to work from: 5,500 RPM, 4.90 CFM, 38.0 dBA, sleeve bearing. The exact 15mm/24V datasheet itself couldn't be tracked down despite real effort — CoolCox's own site 404'd repeatedly, a major datasheet aggregator blocked the request, and one third-party reseller listing showing 0.06A directly conflicted with the 0.15A read straight off the real label (the label wins). Interpolating from two genuinely confirmed sibling datasheets puts the real stock fan at roughly **5,000-5,500 RPM, 3.0-3.5 CFM, 34-38 dBA** — an estimate, honestly labelled as one, not a manufacturer-confirmed number.
+
+### A real, better-on-every-axis replacement
+
+| | Stock (CoolCox BF5015H24S, estimated) | GDSTIME 5015 24V Dual-Ball |
+|---|---|---|
+| RPM | ~5,000-5,500 | **6,000** |
+| Airflow | ~3.0-3.5 CFM | **5.36 CFM** |
+| Noise | ~34-38 dBA | 38.7 dBA |
+| Current | 0.15A | **0.1A** |
+| Bearing | Sleeve | **Dual ball** |
+| Size | 50×50×15mm | 50×50×15mm (exact match) |
+| Connector | 2-pin | 2-pin |
+
+More airflow, more RPM headroom, a genuinely better bearing type for longevity, and a *lower* current draw despite the higher output — actually more efficient, not just more powerful, for around $8. Same physical footprint too, so it should be close to a drop-in — the one snag found so far is the new fan's outlet spout is a different shape to the stock duct opening, planned fix is a small 3D-printed adapter piece, measured directly off the real stock duct.
+
+### A reasoned case for narrowing the duct
+
+Separately, a look at the duct's own shroud around the nozzle raised a real question: it has 5 rectangular vent slots (3 above the nozzle, 2 below), all fed from the same fan and chamber.
+
+![The duct shroud around the nozzle, unmodified](images/fan-upgrade/duct-as-is.jpg)
+
+Three of those five openings sit off to the side rather than directly in line with the nozzle itself:
+
+![Three openings proposed for blocking, marked in yellow](images/fan-upgrade/duct-suggested-mod.jpg)
+
+Drawing it out settled why: the white lines trace each opening's actual airflow direction, the red lines mark true vertical alignment with the nozzle tip. Only two openings sit in genuine direct alignment — the other three have to travel in at more of an angle from an off-centre position, with more chance of the airflow dispersing before it actually reaches the print.
+
+![Airflow and nozzle-alignment diagram — white lines are airflow direction, red lines mark true alignment with the nozzle tip](images/fan-upgrade/duct-airflow-diagram.jpg)
+
+The reasoning: blocking the 3 off-axis openings should concentrate the same total airflow through the 2 directly-aligned ones, for a shorter, straighter path and less dispersed cooling right at the nozzle — the same underlying idea as several known aftermarket duct-narrowing mods for older Kobra printers, just reasoned out directly from this printer's own real geometry rather than copied from someone else's design.
+
+**Not yet tested.** The planned test is a real, controlled before/after: a baseline overhang/bridging print on the current setup, then the same test model on the taped-up spare head, comparing the two results directly rather than guessing from the reasoning alone.
 
 ---
 
