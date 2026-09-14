@@ -62,6 +62,26 @@ Rinkhals went back on the shelf for now — genuinely worth what it offers, and 
 
 One honest caveat worth stating plainly, for anyone weighing the risk of trying Rinkhals themselves: the calibration marathon documented later in this log happened on stock firmware, not because stock is inherently easier to calibrate. It's simply where the time got spent. Put the same hours into calibrating under Rinkhals that went into stock here, and it would very probably have gotten sorted there too.
 
+### Cable management: keeping cable drag off the frame, non-destructively
+
+A small, early physical mod that never made it into this log until now: both the toolhead's cable bundle (the orange PTFE tube plus the sleeved wire loom) and the bed's own cable run were dragging on the frame as the gantry and bed moved — repeated drag/flex in the same spots on a run of cable is exactly the kind of thing that eventually frays a wire or kinks a tube.
+
+The fix was a pair of cheap retractable ID/badge holder reels — the same kind used to clip a work lanyard to a belt — repurposed as spring-tensioned cable lifters instead of anything printer-specific or destructive to the frame.
+
+![The retractable ID holder reels used for this](images/cable-management/retractable-id-holders-product.jpg)
+
+One reel clips to the top of the gantry extrusion, with its retractable cord running down to the toolhead's cable bundle — constant gentle tension keeps the bundle lifted and out of the way through the full range of X/Z travel, retracting and paying out as the toolhead moves instead of letting the slack drag.
+
+![Toolhead cable bundle lifted by the gantry-mounted reel](images/cable-management/toolhead-cables-overview.jpg)
+
+![Close-up of the reel clipped to the top rail](images/cable-management/gantry-reel-closeup.jpg)
+
+The second reel does the same job for the bed cables, mounted so its cord takes the weight off the cable run as the bed travels on the Y-axis, keeping it clear of the frame rail it would otherwise ride against.
+
+![The second reel doing the same job for the bed cables](images/cable-management/bed-cables-reel.jpg)
+
+Nothing drilled, cut, or glued to the frame — both reels attach by their own clip, so the mod comes off clean if it's ever not wanted.
+
 ---
 
 ## Day 6 — Back to Stock, for Now
