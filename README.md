@@ -385,9 +385,9 @@ Nothing here started as a plan to "build tools" — each one exists because a sp
 
 Self-hosted web dashboard via the reverse-engineered local LAN/MQTT protocol. Live status, continuous camera stream, full file management, ACE filament/drying control, live controls, an Advanced tab for occasional-use extras, cloud-free firmware-update checking, an Auto/Light/Dark theme, and support for more than one printer (add, rename, and switch between them, one actively monitored at a time) — all confirmed against real hardware, no cloud account anywhere.
 
-### [Kobra Time Lapse](https://github.com/A-to-PC/Kobra-Time-Lapse) — In testing
+### [Kobra Time Lapse](https://github.com/A-to-PC/Kobra-Time-Lapse) — Released (pre-release)
 
-Watches the same LAN protocol for print state on completely stock firmware — no Rinkhals, no Moonraker — and grabs frames from any RTSP camera automatically while a print runs, assembling the finished timelapse the moment it's done. Includes an optional, log-only frame-comparison failure check.
+Watches the same LAN protocol for print state on completely stock firmware — no Rinkhals, no Moonraker — and grabs frames from any RTSP camera automatically while a print runs, assembling the finished timelapse the moment it's done, with capture timing anchored to real layer changes rather than a free-running clock. Includes an optional, log-only frame-comparison failure check with an opt-in per-print auto-calibration for the threshold. Real v1.0.3 release live on GitHub — tagged pre-release since a couple of pieces (auto-calibration, camera rotation) haven't had a real test yet, not because the core capture/assembly path is unproven.
 
 ### [3D Time Lapse](https://github.com/A-to-PC/3D-Time-Lapse) — Stable, not actively updated
 
