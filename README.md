@@ -383,6 +383,10 @@ A contoured foam plug (matching the internal duct shape, not just a flat tape pa
 
 > **The real print settings for this test**, read directly from Slicer Next's own saved profile rather than transcribed from memory: 0.2mm layers, 240°C nozzle, 0.915 flow ratio, 0.05 pressure advance, 18mm³/s max volumetric speed — all matching the confirmed calibration from Day 12 — plus 30% infill/wall overlap (today's Day 12 gap fix, tuned up from 25%), 10% gyroid sparse infill, random seam, 200mm/s walls, 350mm/s travel. One genuine bonus find while pulling these: **the part-cooling fan's own profile has `fan_min_speed` and `fan_max_speed` both set to 100%** — genuinely no modulation range at all, off only for the first layer then flat-out from layer 3 onward. Real confirmation of something already suspected purely by watching the printer with the naked eye earlier the same day.
 
+### The bench, enclosure and filament dryer build starts today too
+
+The finalised design for the combined bench/enclosure/filament-dryer structure — most of the electronics and timber already on hand — gets most of its carpentry done today: **[full write-up in its own reference section](#reference-the-bench-enclosure--filament-dryer-build)**, kept separate from the day-by-day log since it's an ongoing build rather than a single day's event.
+
 ---
 
 ## Reference: My Confirmed Calibration
@@ -403,7 +407,7 @@ A contoured foam plug (matching the internal duct shape, not just a flat tape pa
 
 ## Reference: The Bench, Enclosure & Filament Dryer Build
 
-> This is a real, physical build documented directly from memory rather than from photos taken during construction — photos to follow once there's a batch ready to add. Everything below is built, not planned; where an earlier design choice changed once it actually got built, this reflects the real, current version.
+> **Status: the design, not the finished thing.** Most of the electronics and the timber are already on hand, and the bulk of the bench and enclosure carpentry is going in on [Day 16](#day-16--tearing-down-a-spare-toolhead-for-real-fan-answers), the same day this write-up went in. What follows is the real, finalised design being built against, documented directly from memory rather than from in-progress photos — photos and a real "as-built" update will follow once there's actual carpentry to show.
 
 The whole thing is one combined structure: a filament storage/dryer base built from 4 pallets, with a fully enclosed housing for the printer itself sitting on top.
 
