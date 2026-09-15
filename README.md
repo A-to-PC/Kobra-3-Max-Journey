@@ -389,6 +389,29 @@ Before the baseline torture-test print even started, a full read of the actual s
 
 Separately, and unrelated to the print itself: both Slicer Next's own camera panel and Kobra LAN Monitor's camera panel dropped the K3M's onboard camera feed simultaneously, mid-print, with nothing sent and nothing changed — just printing. **Second time this has happened**; the first time needed a full power cycle to recover. Likely cause: the printer's own onboard video pipeline appears to support very few concurrent viewers, and having both apps' camera panels open at once was enough to exceed it. [Kobra Time Lapse](https://github.com/A-to-PC/Kobra-Time-Lapse)'s own capture, running throughout on a separate WiFi camera, was completely unaffected — a live, real-world confirmation of why it deliberately uses external camera hardware rather than the printer's own feed: it isn't competing for a slot on a stream that's already demonstrated it can't reliably serve two viewers at once.
 
+### A full motion-settings audit, after the baseline print's real result
+
+The baseline (no-mod) print came out honest, not perfect: the twisted spiral tower, both bridging cones, and the stepped section all held up cleanly, but the curved bridge span sagged into loose, stringy droop rather than holding a clean flat surface — a real, attributable failure on the single hardest feature in the test, not a blanket failure across the board.
+
+More unexpected: several of the curved surfaces — the same bridge wall, the spiral tower — came out with small, randomly-scattered bumps across an otherwise glossy finish. First guess was moisture (trapped water boiling into tiny steam bubbles on the way out of the nozzle), a real and common cause of exactly this look — but the filament in question was freshly opened, sealed stock, not an old exposed spool, which ruled that out. The better-supported read: ringing/resonance, excited by rapid direction changes on curved geometry at whatever acceleration and speed the profile happened to be running.
+
+That led to pulling the actual profile apart against Anycubic's own vendor defaults, line by line, rather than guessing at a fix — and it turned up more than one thing running hotter than Anycubic itself recommends for this exact frame:
+
+| Setting | Anycubic's own default | What the profile had drifted to |
+|---|---|---|
+| `bridge_acceleration` | 3000 | 5000 (+67%) |
+| `inner_wall_acceleration` | 5000 | 6000 (+20%) |
+| `default_acceleration` | 5000 | 2000 (lower, not higher — untouched) |
+| `outer_wall_speed` | 150mm/s | 200mm/s (+33%) |
+| `top_surface_speed` | 100mm/s | 150mm/s (+50%) |
+| `smooth_coefficient` | 40 | 80 (2×, corner-rounding aggressiveness) |
+
+None of these were ever a deliberate, reasoned decision on their own — they'd crept upward during the earlier speed-chasing calibration work (Day 12 and after), each bump justified in isolation by "faster is fine, nothing broke," without ever checking whether the printer's own resonance tuning could actually support running that much harder. Generic online advice to "just raise acceleration" carries exactly this trap: it's untethered from whether a specific frame has been tuned to handle it, and the vendor's own numbers exist for a reason.
+
+All of it reset to Anycubic's exact vendor values — not new guesses, the literal numbers from their own base profile. `outer_wall_speed` and `bridge_acceleration` are the two most directly relevant to what actually showed up in the photos: the outer wall is the visible surface carrying the ringing texture, and the bridge is the single feature with zero margin for imprecision. Reslicing and reprinting the identical torture test with the corrected profile — ~5 more minutes added, on top of the ~10 from re-enabling overhang speed.
+
+Also worth checking once there's time away from the printer: physical play in the gantry's wheels/bearings and belt tension, which would compound whatever ringing the settings alone were causing — a hardware-side check, not something any slicer setting can fix on its own.
+
 ### The bench, enclosure and filament dryer build starts today too
 
 The finalised design for the combined bench/enclosure/filament-dryer structure — most of the electronics and timber already on hand — gets most of its carpentry done today: **[full write-up in its own reference section](#reference-the-bench-enclosure--filament-dryer-build)**, kept separate from the day-by-day log since it's an ongoing build rather than a single day's event.
