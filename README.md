@@ -436,6 +436,25 @@ Comparable, not a clear win — the bridge section shows a similar amount of str
 
 The real test is still ahead: a genuinely pointed, narrowed-tip duct (the 2-tube, ~5mm-reduced-tip design already reasoned out), mocked up on the spare toolhead using the [Covic 3D duct](https://makerworld.com/en/models/1787228-anycubic-kobra-3-max-fan-duct-replacement-model) as a real mounting reference rather than the stock shape at all.
 
+### A side quest into whether Slicer Next itself could get an "Upload only" button
+
+Slicer Next has no way to upload a sliced file to the printer without immediately starting it — a real, everyday annoyance, since it means waiting for one print to finish before you can even queue the next. OrcaSlicer, the project Slicer Next is forked from, has always had this as a plain checkbox. Worth checking properly rather than assuming it's unreachable: Slicer Next's own installed folder carries a genuine, complete **GNU AGPL-3.0** `LICENSE.txt` — real copyleft open source, not boilerplate. A real public repository exists too: `github.com/ANYCUBIC-3D/AnycubicSlicerNext`.
+
+Forked it, and reading the actual C++ source directly (not guessing) found the real picture:
+
+- The "Upload and Print" checkbox genuinely exists in the open code (`PrintHostDialogs.cpp`) — unchecking it sets `post_upload_action` to `None` instead of `StartPrint`. Real, working, already-built functionality.
+- But the K3M's own "Remote Print" button routes through a completely different, Anycubic-specific dialog (`SelectMachineDialog`) that doesn't have this checkbox at all — a Bambu-Lab-style device-pairing system, not the generic OrcaSlicer print-host path.
+- Traced the actual network call behind that button (`on_send_print` → `PrintJob` → `NetworkAgent::start_local_print_with_record`) and found it's not implemented in the open source at all — it's a function pointer dynamically loaded from a **precompiled, closed DLL** (`MachMQTT.dll` and friends) sitting right next to the open-source GUI executable. The exact same split BambuStudio and OrcaSlicer upstream both use deliberately: open GUI, closed device-communication "network plugin," so the proprietary protocol code never has to be released under AGPL.
+- One real, concrete lever found in the open code anyway: a config field, `bbl_use_printhost`, sitting right in the K3M's own machine profile, currently `"0"`. Flipping it to `"1"` reroutes the *same* Print button through the open, generic path instead — the one with the working checkbox.
+
+Getting a real test build compiled was its own honest slog — CMake 4.4.0 too new for the project's hard version gate (fixed with a portable 3.31.6, just for this build), OpenSSL failing to build from source because `nmake` needs the proper Visual Studio Developer environment (a plain shell doesn't have it), then OpenSSL's own Configure script rejecting Git's bundled Perl outright ("doesn't produce Windows like paths") until a genuine native Windows Perl (Strawberry Perl) was installed, then a compiler memory limit hit from building with unlimited parallelism against a large precompiled header, fixed by capping it. Eventually produced a real, working `orca-slicer.exe` — launched, sliced, and successfully connected to the real K3M over the network.
+
+The actual result, tested live: selecting **"Elegoo Link"** as the connection type — a plain, generic OrcaSlicer host type, sitting right there in the dropdown — and testing it against the K3M's real IP came back **"Connection to ElegooLink is working correctly."** Real, live confirmation the K3M's own protocol family is built on exactly that generic connection type, not something exotic — the closed DLL's real job is almost certainly the device-pairing/cloud layer on top, not the wire protocol itself. The Device tab stayed blank when tried this way, which tracks: that tab needs the closed pairing layer specifically, not the plain upload connection.
+
+One more precise, unused lead worth remembering: the installed app (version 2.0.0.3) reports its own build as `develop_859` in its filename — a real commit on the repo's `develop` branch, not the `main` branch this fork actually built from. `main` was missing the K3M profile entirely and showed generic upstream branding; `develop` is very likely far more current and would have been the better starting point.
+
+Real, honest conclusion: yes, genuinely open source — proven by building it, not just claimed — but only down to the GUI and slicing engine. The device-pairing layer stays closed, same as upstream. That's a real, structural answer, not a workaround found. Fork and local build cleaned up (GitHub repo and local files both removed) once the actual question was answered — the practical path to "Upload only" stays exactly where it already was: [Kobra LAN Monitor](https://github.com/A-to-PC/kobra-lan-monitor)'s own upload endpoint, fully open, fully working, already built.
+
 ---
 
 ## Reference: My Confirmed Calibration
