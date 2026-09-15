@@ -418,6 +418,24 @@ Also worth checking once there's time away from the printer: physical play in th
 
 The finalised design for the combined bench/enclosure/filament-dryer structure — most of the electronics and timber already on hand — gets most of its carpentry done today: **[full write-up in its own reference section](#reference-the-bench-enclosure--filament-dryer-build)**, kept separate from the day-by-day log since it's an ongoing build rather than a single day's event.
 
+### The modded-duct test, and an honest reassessment of what it actually proved
+
+With the corrected settings holding, the taped-up spare head went back on and the identical torture test ran again.
+
+![Baseline (stock duct), overview](images/torture-test/baseline-overview.jpg)
+![Modded duct, overview](images/torture-test/modded-overview.jpg)
+
+First impression watching it print live was a clear, major win. A careful side-by-side of the actual photos afterward told a more honest story:
+
+![Baseline (stock duct), bridge/gap close-up](images/torture-test/baseline-bridge-closeup.jpg)
+![Modded duct, bridge/gap close-up](images/torture-test/modded-bridge-closeup.jpg)
+
+Comparable, not a clear win — the bridge section shows a similar amount of stringing in both. The corrected acceleration/speed settings from earlier the same day were very likely doing the real work, not the duct concentration idea.
+
+**Not happy calling this a fair test of the duct concentration idea, in all honesty** — it still used the stock duct's own broad, square openings, just with 3 of the 5 taped shut. The 2 openings left open were only ever chosen for being in vertical *alignment* with the nozzle, not for actually being well-shaped to direct airflow there — and thinking it through properly, the stock opening's own geometry likely sends more air upward than it does down onto the nozzle tip, alignment or not. Blocking three badly-aimed openings and keeping two others that are *also* not well-aimed was never going to isolate whether concentrated, directed airflow actually helps — it only tested "fewer openings from the same unfocused shape," which is a different, weaker question.
+
+The real test is still ahead: a genuinely pointed, narrowed-tip duct (the 2-tube, ~5mm-reduced-tip design already reasoned out), mocked up on the spare toolhead using the [Covic 3D duct](https://makerworld.com/en/models/1787228-anycubic-kobra-3-max-fan-duct-replacement-model) as a real mounting reference rather than the stock shape at all.
+
 ---
 
 ## Reference: My Confirmed Calibration
