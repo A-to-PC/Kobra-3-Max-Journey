@@ -468,7 +468,7 @@ Nothing here started as a plan to "build tools" — each one exists because a sp
 
 ### [Kobra LAN Monitor](https://github.com/A-to-PC/kobra-lan-monitor) — Released
 
-Self-hosted web dashboard via the reverse-engineered local LAN/MQTT protocol. Live status, continuous camera stream, full file management, ACE filament/drying control, live controls, an Advanced tab for occasional-use extras, cloud-free firmware-update checking, an Auto/Light/Dark theme, and support for more than one printer (add, rename, and switch between them, one actively monitored at a time) — all confirmed against real hardware, no cloud account anywhere.
+Self-hosted web dashboard via the reverse-engineered local LAN/MQTT protocol. Live status, continuous camera stream (with an optional separate network camera per printer, since v1.0.5), full file management, ACE filament/drying control, live controls, an Advanced tab for occasional-use extras, cloud-free firmware-update checking, an Auto/Light/Dark theme, and support for more than one printer (add, rename, and switch between them, one actively monitored at a time) — all confirmed against real hardware, no cloud account anywhere.
 
 ### [Kobra Time Lapse](https://github.com/A-to-PC/Kobra-Time-Lapse) — Released (pre-release)
 
