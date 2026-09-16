@@ -40,6 +40,11 @@
   - [The bench, enclosure and filament dryer build starts today too](#the-bench-enclosure-and-filament-dryer-build-starts-today-too)
   - [The modded-duct test, and an honest reassessment](#the-modded-duct-test-and-an-honest-reassessment-of-what-it-actually-proved)
   - [A side quest: Slicer Next's own "Upload only" button](#a-side-quest-into-whether-slicer-next-itself-could-get-an-upload-only-button)
+- [Day 17 — Building a Real Slicer, and What It Took to Get the K3M to Accept a File From It](#day-17--building-a-real-slicer-and-what-it-took-to-get-the-k3m-to-accept-a-file-from-it)
+  - [Forking vanilla OrcaSlicer instead of patching Anycubic's stale one](#forking-vanilla-orcaslicer-instead-of-patching-anycubics-stale-one)
+  - [A painstaking rename, done properly](#a-painstaking-rename-done-properly)
+  - [A real, dedicated Anycubic print host](#a-real-dedicated-anycubic-print-host--built-from-captured-traffic-not-guesswork)
+  - [Two gcode dialects at once](#the-k3ms-firmware-speaks-two-gcode-dialects-at-once-and-rejects-anything-that-doesnt-match-both)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -83,6 +88,7 @@ Jump to any day below for the full depth — this table is just a map of the sha
 | **D15** | **Making the ACE Pro actually automatic: RFID filament tags** | Programmed a blank NFC/RFID tag so the ACE Pro identifies a spool's material and colour on its own instead of setting it by hand every load. A generic NFC app permanently locked the first tag before it was even readable; a purpose-built filament-tag app got a real one working, confirmed live on the printer and cross-checked with a manual-override test. |
 | **D15** | **Advanced tab's false failures, finally explained** | Four Advanced-tab commands had been failing with a misleading "no connection" message despite a genuinely live session — traced to the printer answering with a real reply that just never echoes back the request's own ID. Fixed, and one of the four (toolhead position) turned out to be genuinely working all along once the app could actually see the reply. The other three send cleanly but still show no confirmed physical effect on the real printer — an honest, still-open finding, not a bug left in place. |
 | **D16** | **Tearing down a spare toolhead for real fan and duct answers** | A hunch that a better part-cooling fan alone might fix a print-quality issue turned into a real teardown of a spare toolhead, reading the actual fan's label rather than guessing from Anycubic's own (wrong) spec page. Found a genuine, better-on-every-axis replacement fan, and worked out a real, reasoned case for partially blocking the cooling duct — confirmed which openings actually align with the nozzle rather than guessing. This log itself also switched from topic-chapters to a day-by-day diary today, for the reason in the note above. |
+| **D17** | **Building a real slicer, and what it took to get the K3M to accept a file from it** | Forked vanilla OrcaSlicer, painstakingly renamed it to Kobra Slicer, and built a real `AnycubicLink` print host from a genuine packet capture of Slicer Next's own upload traffic. The K3M's firmware rejected every upload anyway — chased through a real gcode-dialect mismatch, a missing file-format flag, and a producer-string check confirmed straight from the firmware's own binary. Still in progress. |
 
 ---
 
