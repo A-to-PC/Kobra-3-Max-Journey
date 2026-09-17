@@ -47,7 +47,6 @@
   - [Two gcode dialects at once](#the-k3ms-firmware-speaks-two-gcode-dialects-at-once-and-rejects-anything-that-doesnt-match-both)
   - [The real bug: wrong form field name](#the-real-bug-wasnt-in-the-gcode-at-all--it-was-the-wrong-form-field-name)
   - [The bench, dryer base, and enclosure build](#the-bench-dryer-base-and-enclosure--real-physical-progress-alongside-the-software)
-- [Day 18 — The Upload Was Never Broken](#day-18--the-upload-was-never-broken)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -92,8 +91,6 @@ Jump to any day below for the full depth — this table is just a map of the sha
 | **D15** | **Advanced tab's false failures, finally explained** | Four Advanced-tab commands had been failing with a misleading "no connection" message despite a genuinely live session — traced to the printer answering with a real reply that just never echoes back the request's own ID. Fixed, and one of the four (toolhead position) turned out to be genuinely working all along once the app could actually see the reply. The other three send cleanly but still show no confirmed physical effect on the real printer — an honest, still-open finding, not a bug left in place. |
 | **D16** | **Tearing down a spare toolhead for real fan and duct answers** | A hunch that a better part-cooling fan alone might fix a print-quality issue turned into a real teardown of a spare toolhead, reading the actual fan's label rather than guessing from Anycubic's own (wrong) spec page. Found a genuine, better-on-every-axis replacement fan, and worked out a real, reasoned case for partially blocking the cooling duct — confirmed which openings actually align with the nozzle rather than guessing. This log itself also switched from topic-chapters to a day-by-day diary today, for the reason in the note above. |
 | **D17** | **Building a real slicer, and what it took to get the K3M to accept a file from it** | Forked vanilla OrcaSlicer, painstakingly renamed it to Kobra Slicer, and built a real `AnycubicLink` print host from a genuine packet capture of Slicer Next's own upload traffic. The K3M's firmware rejected every upload anyway — chased through a real gcode-dialect mismatch, a missing file-format flag, and a producer-string check confirmed straight from the firmware's own binary, before finding the real cause: a wrong multipart form field name. Real construction started on the bench/dryer/enclosure build alongside it. |
-| **D18** | **The upload was never broken** | Picked back up after a week's usage limit forced a day off. The upload that appeared stuck on "Downloading files" turned out, via an unrelated power cycle, to have completed and been valid the whole time — only the on-screen state was stuck, the same upload-vs-print-signal pattern as the Day 2 Rinkhals case. Kobra LAN Monitor's own upload endpoint had the identical field-name bug, fixed and rebuilt. A real print test is still outstanding. |
-
 ---
 
 ## Day 1 — Arrival & Rinkhals
@@ -573,19 +570,29 @@ With that fixed, a real upload finally completed: Kobra Slicer's own UI showed "
 
 While the slicer saga above played out, real construction started on the 4-pallet dryer base and K3M enclosure design finalised a couple of days earlier — the design work meeting the actual build, in Jason's own words as it happened:
 
-Screwed the pallets together, then the top and bottom, then the sides — the bench's core box taking shape first. Cut the intake riser into the base of the enclosure and drilled a 75mm hole directly under where the K3M's own fan sits, for real airflow rather than a sealed box. Put the left side panel on and immediately recognised it as the wrong move — building the right side first turned out to be the way to actually get the back and top's shape right, so left it off again and started on the right wall instead, including the "poop catcher" area (the purge/drip catch zone). Tools down for the afternoon, and in that time found a real way to anchor the retractable ID-holder cable reels from the Day 3-4 cable management mod into the new structure.
+Screwed the pallets together, then the top and bottom, then the sides — the bench's core box taking shape first.
 
----
+![The first pallet, squared up and being worked into the base structure](images/dryer-enclosure-build/01-first-pallet-squared-up.jpg)
 
-## Day 18 — The Upload Was Never Broken
+![The first plywood panel standing against the pallet base](images/dryer-enclosure-build/02-first-plywood-panel-standing.jpg)
 
-> **TL;DR** — Picked back up after a day off this project (a week's Claude usage limit hit right as Day 17's upload sat stuck on "Downloading files"). Watching the dashboard, exporting fresh logs, and a longer packet capture on the stalled upload all failed to explain it — the real answer turned out to be unrelated to any of that.
+Cut the intake riser into the base of the enclosure and drilled a 75mm hole directly under where the K3M's own fan sits, for real airflow rather than a sealed box.
 
-The printer got power-cycled for an unrelated reason, and the model that had appeared stuck "downloading" the day before was found already sitting on the machine, not yet printed. The upload had genuinely completed and been valid the whole time — only the visible progress/completion state on-screen was ever stuck, not the file itself.
+![The 75mm hole drilled through the base, directly under the printer's own fan](images/dryer-enclosure-build/03-fan-hole-drilled-in-base.jpg)
 
-This is the second time this exact pattern has shown up on this printer, independently: back on Day 2, OrcaSlicer's "Upload and Print" via Rinkhals' Moonraker bridge hit what looked like a broken upload but was actually a broken *print-start* delegate — the file itself always uploaded fine. Two unrelated implementations (Rinkhals' Moonraker layer, and now the K3M's own stock firmware upload endpoint) both show the same shape of fault: **the upload half of "Upload and Print" is solid; whatever is supposed to notice it finished and either report that back or kick off a print is the fragile part.** For a from-scratch print host with no MQTT client of its own, chasing that second signal in C++ is real, open-ended work. Kobra LAN Monitor already has a proven MQTT connection and a proven print-start command sitting in its file browser — so the practical path forward is Kobra LAN Monitor supplying both halves (its own now-fixed upload, and its already-working Print button) rather than building an MQTT client into Kobra Slicer itself just to chase a second signal Kobra LAN Monitor can already send. Kobra LAN Monitor's own upload endpoint turned out to have the identical unverified field-name bug as Kobra Slicer's — fixed in the same pass, rebuilt, and queued for Jason to redeploy.
+Put the left side panel on and immediately recognised it as the wrong move — building the right side first turned out to be the way to actually get the back and top's shape right, so left it off again and started on the right wall instead, including the "poop catcher" area (the purge/drip catch zone).
 
-Status as this gets written: the upload mechanism itself — in both Kobra Slicer and Kobra LAN Monitor — is now believed correct and matching the real captured protocol exactly. Not yet confirmed: an actual print started and completed from either app's upload. The physical printer currently has an uploaded-but-unprinted model sitting on it; a real print test hasn't been run yet.
+![The left side panel going on, before the rethink](images/dryer-enclosure-build/04-left-side-panel-on.jpg)
+
+![The right side going on instead, to get the back and top's shape right first](images/dryer-enclosure-build/05-right-side-going-on.jpg)
+
+![Both side walls up, printer sitting inside the growing enclosure](images/dryer-enclosure-build/06-both-side-walls-up.jpg)
+
+Tools down for the afternoon, and in that time found a real way to anchor the retractable ID-holder cable reels from the Day 3-4 cable management mod into the new structure — repurposed garment hook-and-bar hardware, test-fitted before committing to it.
+
+![The heart-shaped hook hardware, test-fitted before committing](images/dryer-enclosure-build/07-anchor-hardware-test-fit.jpg)
+
+![The retractable reel actually anchored on it](images/dryer-enclosure-build/08-retractable-reel-anchored.jpg)
 
 ---
 
