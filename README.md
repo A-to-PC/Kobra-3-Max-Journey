@@ -47,6 +47,11 @@
   - [Two gcode dialects at once](#the-k3ms-firmware-speaks-two-gcode-dialects-at-once-and-rejects-anything-that-doesnt-match-both)
   - [The real bug: wrong form field name](#the-real-bug-wasnt-in-the-gcode-at-all--it-was-the-wrong-form-field-name)
   - [The bench, dryer base, and enclosure build](#the-bench-dryer-base-and-enclosure--real-physical-progress-alongside-the-software)
+- [Day 18 — The Upload Was Never Broken, and the Enclosure Closes In](#day-18--the-upload-was-never-broken-and-the-enclosure-closes-in)
+  - [The upload was never broken](#the-upload-was-never-broken)
+  - [The enclosure closes in](#the-enclosure-closes-in)
+  - [Power and controls go in](#power-and-controls-go-in)
+  - [Working out the ACE Pro tube pass-through](#working-out-the-ace-pro-tube-pass-through)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -91,6 +96,7 @@ Jump to any day below for the full depth — this table is just a map of the sha
 | **D15** | **Advanced tab's false failures, finally explained** | Four Advanced-tab commands had been failing with a misleading "no connection" message despite a genuinely live session — traced to the printer answering with a real reply that just never echoes back the request's own ID. Fixed, and one of the four (toolhead position) turned out to be genuinely working all along once the app could actually see the reply. The other three send cleanly but still show no confirmed physical effect on the real printer — an honest, still-open finding, not a bug left in place. |
 | **D16** | **Tearing down a spare toolhead for real fan and duct answers** | A hunch that a better part-cooling fan alone might fix a print-quality issue turned into a real teardown of a spare toolhead, reading the actual fan's label rather than guessing from Anycubic's own (wrong) spec page. Found a genuine, better-on-every-axis replacement fan, and worked out a real, reasoned case for partially blocking the cooling duct — confirmed which openings actually align with the nozzle rather than guessing. This log itself also switched from topic-chapters to a day-by-day diary today, for the reason in the note above. |
 | **D17** | **Building a real slicer, and what it took to get the K3M to accept a file from it** | Forked vanilla OrcaSlicer, painstakingly renamed it to Kobra Slicer, and built a real `AnycubicLink` print host from a genuine packet capture of Slicer Next's own upload traffic. The K3M's firmware rejected every upload anyway — chased through a real gcode-dialect mismatch, a missing file-format flag, and a producer-string check confirmed straight from the firmware's own binary, before finding the real cause: a wrong multipart form field name. Real construction started on the bench/dryer/enclosure build alongside it. |
+| **D18** | **The upload was never broken, and the enclosure closes in** | An unrelated power cycle revealed Day 17's "stuck" upload had completed and been valid the whole time — only the on-screen state was stuck, the same upload-vs-print-signal pattern as the Day 2 Rinkhals case. Kobra LAN Monitor got the identical field-name fix. Slicer work paused until the printer's free for a real print test. Meanwhile the enclosure got its back wall, roof, rear access door, both PSUs and its control panel — and a simple silicone-tube design was worked out for routing the ACE Pro's filament tubes down through the roof. |
 ---
 
 ## Day 1 — Arrival & Rinkhals
@@ -593,6 +599,54 @@ Tools down for the afternoon, and in that time found a real way to anchor the re
 ![The heart-shaped hook hardware, test-fitted before committing](images/dryer-enclosure-build/07-anchor-hardware-test-fit.jpg)
 
 ![The retractable reel actually anchored on it](images/dryer-enclosure-build/08-retractable-reel-anchored.jpg)
+
+---
+
+## Day 18 — The Upload Was Never Broken, and the Enclosure Closes In
+
+> **TL;DR** — Picked back up after a week's Claude usage limit forced a day off right as Day 17's upload sat stuck on "Downloading files." The real answer turned out to be unrelated to anything actively being debugged: the printer got power-cycled for an unrelated reason, and the model that looked stuck was already sitting on the machine, fully uploaded. Kobra LAN Monitor got the identical upload fix in the same pass. Slicer work is now paused until the printer's free for a real print test — meanwhile the physical bench/enclosure build kept moving fast: back wall, roof, rear access door, both PSUs, and the control panel all went in.
+
+### The upload was never broken
+
+Watching Kobra LAN Monitor's dashboard, exporting fresh logs off the printer, and a longer packet capture on the stalled upload (real MQTT traffic on port 9883 right after the HTTP response, but TLS-encrypted, unreadable) all failed to explain the stuck "Downloading files" screen directly. The actual answer came from an unrelated event: the printer got power-cycled, and the model that had appeared stuck the night before was found already sitting on the machine, not yet printed. The upload had genuinely completed and been valid the whole time — only the visible progress/completion state on-screen was ever stuck, not the file itself.
+
+This is the second time this exact pattern has shown up on this printer, independently: back on Day 2, OrcaSlicer's "Upload and Print" via Rinkhals' Moonraker bridge hit what looked like a broken upload but was actually a broken *print-start* delegate — the file itself always uploaded fine. Two unrelated implementations (Rinkhals' Moonraker layer, and now the K3M's own stock firmware upload endpoint) both show the same shape of fault: **the upload half of "Upload and Print" is solid; whatever is supposed to notice it finished and either report that back or kick off a print is the fragile part.** For a from-scratch print host with no MQTT client of its own, chasing that second signal in C++ is real, open-ended work. Kobra LAN Monitor already has a proven MQTT connection and a proven print-start command sitting in its file browser — so the practical path forward is Kobra LAN Monitor supplying both halves (its own now-fixed upload, and its already-working Print button) rather than building an MQTT client into Kobra Slicer itself just to chase a second signal Kobra LAN Monitor can already send. Kobra LAN Monitor's own upload endpoint turned out to have the identical unverified field-name bug as Kobra Slicer's — fixed in the same pass, rebuilt, and queued for redeployment.
+
+Status: the upload mechanism itself — in both Kobra Slicer and Kobra LAN Monitor — is now believed correct and matching the real captured protocol exactly. Not yet confirmed: an actual print started and completed from either app's upload. The printer's not free to test on right now (mid-build on the enclosure, see below), so slicer work is deliberately paused rather than pushed further blind.
+
+### The enclosure closes in
+
+Real carpentry kept moving fast today: the back wall went on (and turned out to cover the pallet base's back openings entirely — no duct needed for the PSU cooling inlet after all, just a slide-in/out filter cartridge on the front right side instead), support went in for the rear access door to swing off the right rear corner, and the roof went on, glued and screwed.
+
+![Both side walls, the back wall and the roof all in place, printer sitting inside](images/dryer-enclosure-build-day18/01-back-wall-and-walls-up.jpg)
+
+![The roof on top, glued and screwed](images/dryer-enclosure-build-day18/02-roof-on.jpg)
+
+The roof sagged a little once it was on, so a metal angle bracket went in at the rear right corner for real support.
+
+![The metal angle bracket added at the rear right corner once the roof showed a little sag](images/dryer-enclosure-build-day18/03-metal-angle-sag-support.jpg)
+
+The rear access door got cut and swung on its hinges, a small timber strip went into the top section of the poop catcher's right wall (leaving the bottom open for a clear door later), and support for the ACE Pro to sit on top went in — that section will need a 3mm timber layer once the exterior gets 3mm-plywood-capped over the wiring channels elsewhere in the build.
+
+![The rear access door cut and swung open](images/dryer-enclosure-build-day18/04-rear-access-door-swung-open.jpg)
+
+### Power and controls go in
+
+Both power supplies — the 25A unit for the dryer/base zone and the 5A unit for the enclosure zone — got mounted on the back wall, outside the enclosure.
+
+![Both PSUs mounted on the back wall, outside the enclosure](images/dryer-enclosure-build-day18/05-psus-mounted-on-back-wall.jpg)
+
+The enclosure's control panel got mapped out on a spare offcut first — temp controller, light switch, dimmer, each position pencilled and measured — then cut, drilled and the actual hardware installed into the real panel. Not wired yet. A lucky find along the way: the temp controller's own probe reaches the cutter wedge and sits there free, no extension cable needed — an extension would only be needed if it ends up mounted from below or above instead, which isn't required for the print-run tests planned next.
+
+![The temp controller, light switch and dimmer installed into the control panel](images/dryer-enclosure-build-day18/06-controls-panel-installed.jpg)
+
+### Working out the ACE Pro tube pass-through
+
+With the roof on, the last open design question was how the ACE Pro's 4 filament tubes get from its position on top of the enclosure down to the toolhead without binding as the toolhead moves, or kinking on tall prints where there's little vertical clearance left to the roof.
+
+A linear ball bearing was the first idea and got ruled out quickly — it needs a hard, precisely round shaft to ride on, and a bundle of 4 soft PTFE tubes is neither, risking abrading the tubes rather than guiding them. A felt or brush-lined guide sleeve was the next idea and is genuinely viable, but landed on something simpler: a single length of soft, low-durometer (Shore A 20-30, not standard 40-60 hose) silicone tube, 20-22mm ID over the ~10mm tube bundle, run 100mm down into the enclosure and ~50mm up into the ACE Pro side. Silicone's own softness does the same job a felt liner would — smooth, low-friction, and it bends gradually along its length instead of the bowden tubes kinking against a hard edge — with one less part. Mounted via an interference fit at the roof (hole drilled slightly undersized versus the tube's OD) rather than glued, so it stays serviceable.
+
+Routing the tubes back through the enclosure and out a sealed exit in the back wall instead was considered and rejected — it would need roughly 2m of extra bowden length to reach around from the roof-mounted ACE Pro, a permanent friction and retraction-reliability cost on every single print, to solve what's likely a fairly minor heat leak. The open bore through the silicone tube isn't fully sealed, but between the roof-line interference fit, the ~40% of the bore already filled by the tube bundle, and 100mm of length with no straight line for air to convect through, the real loss should be modest — and the exhaust fan, which has no backdraft shutter, is already a bigger, unrestricted leak path when idle. Not worth chasing further without first actually measuring it once built.
 
 ---
 
