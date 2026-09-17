@@ -636,7 +636,7 @@ Both power supplies — the 25A unit for the dryer/base zone and the 5A unit for
 
 ![Both PSUs mounted on the back wall, outside the enclosure](images/dryer-enclosure-build-day18/05-psus-mounted-on-back-wall.jpg)
 
-The enclosure's control panel got mapped out on a spare offcut first — temp controller, light switch, dimmer, each position pencilled and measured — then cut, drilled and the actual hardware installed into the real panel. Not wired yet. A lucky find along the way: the temp controller's own probe reaches the cutter wedge and sits there free, no extension cable needed — an extension would only be needed if it ends up mounted from below or above instead, which isn't required for the print-run tests planned next.
+The enclosure's control panel got mapped out on a spare offcut first — temp controller, light switch, dimmer, each position pencilled and measured — then cut, drilled and the actual hardware installed into the real panel. Not wired yet. A lucky find along the way: the temp controller's own probe reaches the cutter wedge with its wire run free, no extension cable needed — an extension would only be needed if the wire had to be routed in from below or above instead, which isn't required for the print-run tests planned next.
 
 ![The temp controller, light switch and dimmer installed into the control panel](images/dryer-enclosure-build-day18/06-controls-panel-installed.jpg)
 
