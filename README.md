@@ -143,6 +143,12 @@ The second reel does the same job for the bed cables, mounted so its cord takes 
 
 Nothing drilled, cut, or glued to the frame — both reels attach by their own clip, so the mod comes off clean if it's ever not wanted.
 
+One detail visible in a couple of later photos but never actually written up here: each reel's clip needs something sturdy to pull against, so it's not tugging on real wiring connections every time it extends or retracts. A loop of solid wire, cable-tied to the wire tidy and wrapped around a washer, takes that load instead — a sacrificial strain-relief point rather than the actual connections.
+
+![The strain-relief wire loop at the top of the left-side wiring](images/cable-management/strain-relief-wire-top.jpg)
+
+![The same detail at the bottom](images/cable-management/strain-relief-wire-bottom.jpg)
+
 ---
 
 ## Day 6 — Back to Stock, for Now
