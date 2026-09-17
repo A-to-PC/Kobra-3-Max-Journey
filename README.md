@@ -607,7 +607,7 @@ Status as this gets written: the upload mechanism itself — in both Kobra Slice
 
 ## Reference: The Bench, Enclosure & Filament Dryer Build
 
-> **Status: the design, not the finished thing.** Most of the electronics and the timber are already on hand, and the bulk of the bench and enclosure carpentry is going in on [Day 16](#day-16--tearing-down-a-spare-toolhead-for-real-fan-answers), the same day this write-up went in. What follows is the real, finalised design being built against, documented directly from memory rather than from in-progress photos — photos and a real "as-built" update will follow once there's actual carpentry to show.
+> **Status: the design, not the finished thing.** Most of the electronics and the timber are already on hand, and the bulk of the bench and enclosure carpentry started on [Day 16](#day-16--tearing-down-a-spare-toolhead-for-real-fan-answers) and is genuinely underway as of [Day 17](#day-17--building-a-real-slicer-and-what-it-took-to-get-the-k3m-to-accept-a-file-from-it) — pallets, top, bottom and sides screwed together, the base's intake riser and fan hole cut, framing started on the right wall. What follows is the real, finalised design being built against, documented directly from memory rather than from in-progress photos. Still not the finished thing — a full "as-built" update (with photos) will follow once the structure is actually complete.
 
 The whole thing is one combined structure: a filament storage/dryer base built from 4 pallets, with a fully enclosed housing for the printer itself sitting on top.
 
