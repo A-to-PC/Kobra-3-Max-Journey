@@ -632,7 +632,9 @@ The rear access door got cut and swung on its hinges, a small timber strip went 
 
 ### Power and controls go in
 
-Both power supplies — the 25A unit for the dryer/base zone and the 5A unit for the enclosure zone — got mounted on the back wall, outside the enclosure.
+Both power supplies — the 25A unit for the dryer/base zone and the 5A unit for the enclosure zone — got mounted on the back wall, outside the enclosure. The back wall sits with 100mm of open space down to the end of the pallet base below it, and that gap is where the wiring and both PSUs actually live, boxed in with their own dedicated fan running constantly for PSU cooling — separate from the poop catcher's thermostatic exhaust fan, this one has no controller, it just runs.
+
+Two other open design threads got resolved today too. The roof needed real structural support once it showed a little sag (the metal angle bracket above) — built more like a second-storey floor than a simple lid, which turned out to double as a hidden wiring run for the whole enclosure, no separate 3mm re-clad-over-channels layer needed after all. And the plan to relocate the printer's touchscreen outside onto the poop-catcher overhang — which needed a custom ~1000mm ribbon-cable extension that was never actually sourced — got dropped entirely: the screen stays in its original low position, won't see any heat there, and isn't really needed day-to-day anymore now that Kobra LAN Monitor and Kobra Slicer both cover remote status.
 
 ![Both PSUs mounted on the back wall, outside the enclosure](images/dryer-enclosure-build-day18/05-psus-mounted-on-back-wall.jpg)
 
