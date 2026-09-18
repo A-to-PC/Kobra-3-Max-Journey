@@ -52,6 +52,7 @@
   - [The enclosure closes in](#the-enclosure-closes-in)
   - [Power and controls go in](#power-and-controls-go-in)
   - [Working out the ACE Pro tube pass-through](#working-out-the-ace-pro-tube-pass-through)
+- [Day 19 — Sealing Up and Wiring In](#day-19--sealing-up-and-wiring-in)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -97,6 +98,7 @@ Jump to any day below for the full depth — this table is just a map of the sha
 | **D16** | **Tearing down a spare toolhead for real fan and duct answers** | A hunch that a better part-cooling fan alone might fix a print-quality issue turned into a real teardown of a spare toolhead, reading the actual fan's label rather than guessing from Anycubic's own (wrong) spec page. Found a genuine, better-on-every-axis replacement fan, and worked out a real, reasoned case for partially blocking the cooling duct — confirmed which openings actually align with the nozzle rather than guessing. This log itself also switched from topic-chapters to a day-by-day diary today, for the reason in the note above. |
 | **D17** | **Building a real slicer, and what it took to get the K3M to accept a file from it** | Forked vanilla OrcaSlicer, painstakingly renamed it to Kobra Slicer, and built a real `AnycubicLink` print host from a genuine packet capture of Slicer Next's own upload traffic. The K3M's firmware rejected every upload anyway — chased through a real gcode-dialect mismatch, a missing file-format flag, and a producer-string check confirmed straight from the firmware's own binary, before finding the real cause: a wrong multipart form field name. Real construction started on the bench/dryer/enclosure build alongside it. |
 | **D18** | **The upload was never broken, and the enclosure closes in** | An unrelated power cycle revealed Day 17's "stuck" upload had completed and been valid the whole time — only the on-screen state was stuck, the same upload-vs-print-signal pattern as the Day 2 Rinkhals case. Kobra LAN Monitor got the identical field-name fix. Slicer work paused until the printer's free for a real print test. Meanwhile the enclosure got its back wall, roof, rear access door, both PSUs and its control panel — and a simple silicone-tube design was worked out for routing the ACE Pro's filament tubes down through the roof. |
+| **D19** | **Sealing up and wiring in** | Door openings got supports — to seal against and to square up/brace a wobbly front — the inside got sealed and screw heads covered (bar the 4 holding the enclosure to the dryer base), and the extraction fan went into its roof-cavity mount. Both main 12V supply wires got routed and run to the two PSUs on the back wall. |
 ---
 
 ## Day 1 — Arrival & Rinkhals
@@ -655,6 +657,40 @@ With the roof on, the last open design question was how the ACE Pro's 4 filament
 A linear ball bearing was the first idea and got ruled out quickly — it needs a hard, precisely round shaft to ride on, and a bundle of 4 soft PTFE tubes is neither, risking abrading the tubes rather than guiding them. A felt or brush-lined guide sleeve was the next idea and is genuinely viable, but landed on something simpler: a single length of soft, low-durometer (Shore A 20-30, not standard 40-60 hose) silicone tube, 20-22mm ID over the ~10mm tube bundle, run 100mm down into the enclosure and ~50mm up into the ACE Pro side. Silicone's own softness does the same job a felt liner would — smooth, low-friction, and it bends gradually along its length instead of the bowden tubes kinking against a hard edge — with one less part. Mounted via an interference fit at the roof (hole drilled slightly undersized versus the tube's OD) rather than glued, so it stays serviceable.
 
 Routing the tubes back through the enclosure and out a sealed exit in the back wall instead was considered and rejected — it would need roughly 2m of extra bowden length to reach around from the roof-mounted ACE Pro, a permanent friction and retraction-reliability cost on every single print, to solve what's likely a fairly minor heat leak. The open bore through the silicone tube isn't fully sealed, but between the roof-line interference fit, the ~40% of the bore already filled by the tube bundle, and 100mm of length with no straight line for air to convect through, the real loss should be modest — and the exhaust fan, which has no backdraft shutter, is already a bigger, unrestricted leak path when idle. Not worth chasing further without first actually measuring it once built.
+
+---
+
+## Day 19 — Sealing Up and Wiring In
+
+> **TL;DR** — With the box itself closed in as of Day 18, today was about making it airtight and getting the wiring in place for power, not turning anything on yet: supports went in around every door opening — sealing surfaces for the doors and, just as importantly, squaring up and bracing a front that had been wobbly — the whole interior got sealed and every screw head covered except the 4 still holding the enclosure down to the dryer base, the extraction fan went into its roof-cavity mount, and both main 12V supply runs got drilled through and routed down to the two PSUs — nothing connected or live yet.
+
+Supports went in around all the door openings — doing two jobs at once: giving each door something to seal against once the clear panels go on, and squaring up and bracing the front, which had been wobbly until these went in.
+
+![Supports fitted around the door openings, interior visible through the open front](images/dryer-enclosure-build-day19/01-door-opening-supports-sealed-interior.jpg)
+
+The whole interior got sealed, and every screw head covered except the 4 holding the enclosure down to the dryer base underneath — those stay exposed.
+
+![The sealed interior, screw heads covered](images/dryer-enclosure-build-day19/02-interior-sealed-screw-heads-covered.jpg)
+
+The control panel from Day 18 — temp controller and dimmer — sits mounted on the enclosure's own side wall, still unwired at this point but now permanently in place rather than sitting loose on an offcut.
+
+![The control panel mounted on the enclosure's side wall](images/dryer-enclosure-build-day19/03-control-panel-side-view.jpg)
+
+The 75mm hole for the extraction fan got drilled through the roof, and the fan itself mounted into the roof cavity, with leftover support timber glued in around it to close the mount up properly.
+
+![The extraction fan mounted into its roof-cavity housing](images/dryer-enclosure-build-day19/04-extraction-fan-in-roof-cavity.jpg)
+
+All the holes needed to route the main power wiring got drilled, and both main 12V supply wires got run down through them from the roof into the enclosure body.
+
+![A main power wire routed down through a drilled hole at the roof edge](images/dryer-enclosure-build-day19/05-main-power-wire-through-roof.jpg)
+
+Those runs reach the two PSUs mounted on the back wall from Day 18 — Enclosure PSU and Dryer PSU — cable pulled down to each, not connected up yet.
+
+![Wiring run down to both PSUs, Enclosure PSU and Dryer PSU side by side](images/dryer-enclosure-build-day19/06-wiring-run-to-both-psus.jpg)
+
+The same wiring pass reaches into the control panel corner too, ready for the temp controller and switches to actually get connected next.
+
+![A wire run reaching into the control panel corner](images/dryer-enclosure-build-day19/07-wiring-run-to-control-panel.jpg)
 
 ---
 
