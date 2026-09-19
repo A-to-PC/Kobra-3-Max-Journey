@@ -53,6 +53,7 @@
   - [Power and controls go in](#power-and-controls-go-in)
   - [Working out the ACE Pro tube pass-through](#working-out-the-ace-pro-tube-pass-through)
 - [Day 19 — Sealing Up and Wiring In](#day-19--sealing-up-and-wiring-in)
+- [Day 20 — Live Wiring, Paint, and a $2 Diffuser Fix](#day-20--live-wiring-paint-and-a-2-diffuser-fix)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -99,6 +100,7 @@ Jump to any day below for the full depth — this table is just a map of the sha
 | **D17** | **Building a real slicer, and what it took to get the K3M to accept a file from it** | Forked vanilla OrcaSlicer, painstakingly renamed it to Kobra Slicer, and built a real `AnycubicLink` print host from a genuine packet capture of Slicer Next's own upload traffic. The K3M's firmware rejected every upload anyway — chased through a real gcode-dialect mismatch, a missing file-format flag, and a producer-string check confirmed straight from the firmware's own binary, before finding the real cause: a wrong multipart form field name. Real construction started on the bench/dryer/enclosure build alongside it. |
 | **D18** | **The upload was never broken, and the enclosure closes in** | An unrelated power cycle revealed Day 17's "stuck" upload had completed and been valid the whole time — only the on-screen state was stuck, the same upload-vs-print-signal pattern as the Day 2 Rinkhals case. Kobra LAN Monitor got the identical field-name fix. Slicer work paused until the printer's free for a real print test. Meanwhile the enclosure got its back wall, roof, rear access door, both PSUs and its control panel — and a simple silicone-tube design was worked out for routing the ACE Pro's filament tubes down through the roof. |
 | **D19** | **Sealing up and wiring in** | Door openings got supports — to seal against and to square up/brace a wobbly front — the inside got sealed and screw heads covered (bar the 4 holding the enclosure to the dryer base), and the extraction fan went into its roof-cavity mount. Both main 12V supply wires got routed and run to the two PSUs on the back wall. |
+| **D20** | **Live wiring, paint, and a $2 diffuser fix** | Enclosure wiring finished (bar the LED light, left unsoldered for painting), temp controller and exhaust fan tested live and working, a mains power switch added. Interior painted matte black, 2 coats, for cleaner time-lapse footage. A $2 clear vinyl shower curtain liner turned out to be a genuinely good LED diffuser — 3 layers for red/blue, 2 for white. |
 ---
 
 ## Day 1 — Arrival & Rinkhals
@@ -691,6 +693,30 @@ Those runs reach the two PSUs mounted on the back wall from Day 18 — Enclosure
 The same wiring pass reaches into the control panel corner too, ready for the temp controller and switches to actually get connected next.
 
 ![A wire run reaching into the control panel corner](images/dryer-enclosure-build-day19/07-wiring-run-to-control-panel.jpg)
+
+---
+
+## Day 20 — Live Wiring, Paint, and a $2 Diffuser Fix
+
+> **TL;DR** — A lighter day, paint drying taking up a lot of it: the enclosure's wiring got finished (bar the LED light itself, deliberately left unsoldered until painting was done), the temp controller and exhaust fan tested live and working for real, a mains power switch went in, and the interior got two coats of matte black — specifically for cleaner time-lapse footage, not just looks. Also worked out that a $2 clear vinyl shower curtain liner makes a genuinely good LED diffuser, with the layer count tuned per LED colour.
+
+The enclosure's wiring got finished — temp controller and exhaust fan both live, tested for real rather than just checked for continuity. The LED light itself was deliberately left unsoldered until after painting, so a bare wire wasn't in the way. The wiring run still needs to be properly enclosed, with its own access door, rather than left exposed long-term.
+
+![Wiring at the control panel corner, temp controller and fan connections in place](images/dryer-enclosure-build-day20/01-enclosure-wiring-corner.jpg)
+
+A mains power switch went in on the side, and the temp controller came up live for the first time — reading real numbers off the actual sensor rather than sitting dark on the bench.
+
+![The control panel live — temp controller reading real numbers, mains switch visible on the side wall](images/dryer-enclosure-build-day20/02-control-panel-live-mains-switch.jpg)
+
+The interior got two coats of matte black paint — not just for looks, but specifically because a flat black interior reads far better on time-lapse footage than bare plywood, avoiding blown-out highlights and colour cast from the timber under the enclosure's own lighting.
+
+![The interior after the first coat of matte black](images/dryer-enclosure-build-day20/03-first-coat-black.jpg)
+
+![The interior after the second coat, a cleaner, more even finish](images/dryer-enclosure-build-day20/04-second-coat-black.jpg)
+
+Separate side project: sourcing something to dial back the glare off the temp controller's own LED display — a $2 clear vinyl shower curtain liner (Splash Collection brand) turned out to work well as a diffuser once actually tested, reading noticeably more white/frosted than genuinely clear once lit from behind. Layer count matters and is colour-dependent: 3 layers is the sweet spot for red and blue LEDs, 2 layers for white — and it has to sit as close to the actual screen as possible to work properly, not floating at a distance.
+
+![The Splash Collection clear vinyl shower curtain liner used as the LED diffuser material](images/dryer-enclosure-build-day20/05-splash-collection-diffuser-material.jpg)
 
 ---
 
