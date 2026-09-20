@@ -54,6 +54,7 @@
   - [Working out the ACE Pro tube pass-through](#working-out-the-ace-pro-tube-pass-through)
 - [Day 19 — Sealing Up and Wiring In](#day-19--sealing-up-and-wiring-in)
 - [Day 20 — Live Wiring, Paint, and a $2 Diffuser Fix](#day-20--live-wiring-paint-and-a-2-diffuser-fix)
+- [Day 21 — The Printer Moves In, and Kobra Slicer's First Real Print](#day-21--the-printer-moves-in-and-kobra-slicers-first-real-print)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -101,6 +102,7 @@ Jump to any day below for the full depth — this table is just a map of the sha
 | **D18** | **The upload was never broken, and the enclosure closes in** | An unrelated power cycle revealed Day 17's "stuck" upload had completed and been valid the whole time — only the on-screen state was stuck, the same upload-vs-print-signal pattern as the Day 2 Rinkhals case. Kobra LAN Monitor got the identical field-name fix. Slicer work paused until the printer's free for a real print test. Meanwhile the enclosure got its back wall, roof, rear access door, both PSUs and its control panel — and a simple silicone-tube design was worked out for routing the ACE Pro's filament tubes down through the roof. |
 | **D19** | **Sealing up and wiring in** | Door openings got supports — to seal against and to square up/brace a wobbly front — the inside got sealed and screw heads covered (bar the 4 holding the enclosure to the dryer base), and the extraction fan went into its roof-cavity mount. Both main 12V supply wires got routed and run to the two PSUs on the back wall. |
 | **D20** | **Live wiring, paint, and a $2 diffuser fix** | Enclosure wiring finished (bar the LED light, left unsoldered for painting), temp controller and exhaust fan tested live and working, a mains power switch added. Interior painted matte black, 2 coats, for cleaner time-lapse footage. A $2 clear vinyl shower curtain liner turned out to be a genuinely good LED diffuser — 3 layers for red/blue, 2 for white. |
+| **D21** | **The printer moves in, and Kobra Slicer's first real print** | Final coat of paint, holes drilled for the tube pass-through and ACE Pro cable, all wiring run and tidied — then the K3M itself went into the finished enclosure for the first time, ACE Pro on top. Kobra LAN Monitor gained camera rotation (v1.0.6), fixing a real layout bug it exposed along the way. Kobra Slicer got its first ever real print running on the printer — followed by a real firmware lockup, recovered with a power cycle. |
 ---
 
 ## Day 1 — Arrival & Rinkhals
@@ -717,6 +719,54 @@ The interior got two coats of matte black paint — not just for looks, but spec
 Separate side project: sourcing something to dial back the glare off the temp controller's own LED display — a $2 clear vinyl shower curtain liner (Splash Collection brand) turned out to work well as a diffuser once actually tested, reading noticeably more white/frosted than genuinely clear once lit from behind. Layer count matters and is colour-dependent: 3 layers is the sweet spot for red and blue LEDs, 2 layers for white — and it has to sit as close to the actual screen as possible to work properly, not floating at a distance.
 
 ![The Splash Collection clear vinyl shower curtain liner used as the LED diffuser material](images/dryer-enclosure-build-day20/05-splash-collection-diffuser-material.jpg)
+
+---
+
+## Day 21 — The Printer Moves In, and Kobra Slicer's First Real Print
+
+> **TL;DR** — The enclosure got its final coat of paint, holes drilled for the tube pass-through and the ACE Pro's extended data cable, and all the wiring run and tidied — then the K3M itself went into the finished box for the first time, ACE Pro sitting on top. Separately, Kobra LAN Monitor gained a camera rotation feature (v1.0.6) after finding the EZVIZ camera needed a rotate option the vendor app doesn't offer, which exposed and fixed a real layout bug along the way. And Kobra Slicer finally got a real print running on the printer for the first time — followed immediately by a genuine firmware lockup, recovered with a power cycle, cause still unconfirmed.
+
+### The enclosure closes up for real
+
+Final coat of paint went on, then holes got drilled for the two things still needing to pass through the roof: the filament tube bundle and the ACE Pro's own data/control cable, now extended (4-core shielded, plus a genuine 5th wire for the shield itself even though it's unterminated at either end today — cheap insurance if it's ever needed later). All the wiring got run and tidied with cable ties.
+
+Then the K3M itself went into the finished enclosure for the first time — ACE Pro on top, the temp controller reading real numbers, the mains switch live.
+
+![The printer installed inside the finished enclosure, ACE Pro on top, control panel live](images/dryer-enclosure-build-day21/01-printer-and-ace-pro-installed.jpg)
+
+The EZVIZ camera got properly mounted in the corner with its cabling run and clipped down.
+
+![The EZVIZ camera mounted in the corner, cable routed and clipped](images/dryer-enclosure-build-day21/02-ezviz-camera-mount-and-cabling.jpg)
+
+The temp controller's probe wire got cable-tied to the gantry, and the rest of the interior wiring picked up the same treatment.
+
+![The thermometer probe wire cable-tied to the gantry](images/dryer-enclosure-build-day21/03-thermometer-probe-cable-tied-to-gantry.jpg)
+
+The interim tube pass-through (19mm ID, Shore 60A reinforced tube — the material actually on hand, standing in for the eventual cast Shore 30A one) went in through the roof, 20mm proud on both the top and bottom face so the tube bundle always transitions through soft tube material rather than the raw cut edge of the plywood.
+
+![The interim tube fitted through the roof pass-through](images/dryer-enclosure-build-day21/04-interim-tube-through-roof.jpg)
+
+![A cable anchor point in the rear corner](images/dryer-enclosure-build-day21/05-cable-anchor-point.jpg)
+
+A real gap surfaced once the tubes were actually in and moving with the toolhead: at its lowest travel position, nothing pulls the tube bundle's slack back up through the roof as the toolhead rises again, so it just sags inside the enclosure. Fix, using parts already on hand rather than buying anything new: 3 more of the same retractable ID-holder reels already doing this job for the toolhead/bed cables, needing a 500mm upright to mount one, plus a wave-shaped holder (4 open 4mm channels, one per tube, with a rising curved "sprung end") to secure the bundle behind the ACE Pro without a sharp bend — designed today, not yet printed. Also found: both the reel clips and the picture-hanger-style anchor hardware they sit on click loose at times and will need hot glue or silicone to lock in place properly.
+
+### Kobra LAN Monitor gets camera rotation, and a layout bug it exposed
+
+With the EZVIZ camera now mounted sideways in its new position, its own app only offers flip, not rotate — so Kobra LAN Monitor gained a rotate button on the camera panel, cycling 0/90/180/270° clockwise and remembered per printer. Applied server-side via ffmpeg's own `transpose` filter, baked into the actual frames rather than a client-side CSS trick, so every viewer sees it the same way.
+
+Testing it against the real sideways camera immediately surfaced a real, pre-existing layout bug: the camera `<img>` was sized with plain `width/height:100%`, which let a portrait-shaped (rotated) frame drag its own container taller to match — a 90° stream blew the camera card out to roughly double height. Fixed by taking the image out of normal document flow entirely, so its content can never influence its own box size regardless of orientation. Tagged and released as **v1.0.6** with the fix included.
+
+### A real print, finally — then a real lockup
+
+With the printer free again, it was time to settle the question left open since Day 17: would an actual print run from Kobra Slicer's own upload, start to finish? First attempt hit a genuinely new symptom — the touchscreen's print-start screen had the Print button greyed out at the filament-select step, even after manually selecting all 4 ACE Pro slots. Kobra Slicer has no live "sync filament from the connected printer" feature (a real Bambu-style AMS-mapping dialog exists in the forked source but isn't wired up to a live ACE Pro query) — filament slots have to be set manually in the Filament panel before slicing.
+
+Re-sliced with all 4 slots explicitly set, plus backing out of the stuck "Downloading files" screen and starting the print from the touchscreen's own file list instead of waiting on it — and the printer began heating for real. The upload itself was confirmed complete via Kobra Slicer's own toast notification well before that, matching the pattern already seen twice before (Day 2's Rinkhals case, Day 18's power-cycle discovery): the upload always works, the on-screen "downloading" state is what gets stuck, and starting the print from the file list directly is what actually works.
+
+It didn't last. A short way in, the printer locked up completely — unresponsive to both Slicer Next and Kobra LAN Monitor over the network, with Pause and Stop greyed out even on the touchscreen itself. Recovered with a power cycle, the only fix that's ever worked for this specific failure shape (it also happened twice back on Day 11, from OrcaSlicer's raw Klipper output flooding a command the firmware couldn't handle). The exact fix from Day 11 was checked and is still intact in Kobra Slicer's own gcode writer — not the obvious repeat it looked like at first. The real gcode from this attempt wasn't preserved (Kobra Slicer cleans up its own upload temp files on close), so the actual cause is still open. This is genuinely the first time gcode from this codebase has ever reached the point of being executed by the firmware at all — every earlier attempt stalled before print actually started — so it's plausible this is a new issue rather than a repeat of an old one.
+
+### LED mounts, designed and printing
+
+With the enclosure now dark inside (no light dependency for the camera either, as it turns out — the EZVIZ's IR night vision gives a clear view even with the light off), LED support brackets got designed and are printing.
 
 ---
 
