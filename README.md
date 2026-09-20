@@ -766,7 +766,9 @@ It didn't last. A short way in, the printer locked up completely — unresponsiv
 
 ### LED mounts, designed and printing
 
-With the enclosure now dark inside (no light dependency for the camera either, as it turns out — the EZVIZ's IR night vision gives a clear view even with the light off), LED support brackets got designed and are printing.
+With the enclosure now dark inside (no light dependency for the camera either, as it turns out — the EZVIZ's IR night vision gives a clear view even with the light off), LED support brackets got designed and are printing — watched live through Kobra LAN Monitor, light off, camera view clear the whole way through on IR alone.
+
+![Kobra LAN Monitor watching the LED support brackets print, enclosure light off, EZVIZ IR night vision carrying the whole view](images/dryer-enclosure-build-day21/06-led-support-printing-ir-nightvision.png)
 
 ---
 
