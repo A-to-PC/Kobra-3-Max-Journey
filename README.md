@@ -55,6 +55,7 @@
 - [Day 19 — Sealing Up and Wiring In](#day-19--sealing-up-and-wiring-in)
 - [Day 20 — Live Wiring, Paint, and a $2 Diffuser Fix](#day-20--live-wiring-paint-and-a-2-diffuser-fix)
 - [Day 21 — The Printer Moves In, and Kobra Slicer's First Real Print](#day-21--the-printer-moves-in-and-kobra-slicers-first-real-print)
+- [Day 22 — Nothing Today](#day-22--nothing-today)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -103,6 +104,7 @@ Jump to any day below for the full depth — this table is just a map of the sha
 | **D19** | **Sealing up and wiring in** | Door openings got supports — to seal against and to square up/brace a wobbly front — the inside got sealed and screw heads covered (bar the 4 holding the enclosure to the dryer base), and the extraction fan went into its roof-cavity mount. Both main 12V supply wires got routed and run to the two PSUs on the back wall. |
 | **D20** | **Live wiring, paint, and a $2 diffuser fix** | Enclosure wiring finished (bar the LED light, left unsoldered for painting), temp controller and exhaust fan tested live and working, a mains power switch added. Interior painted matte black, 2 coats, for cleaner time-lapse footage. A $2 clear vinyl shower curtain liner turned out to be a genuinely good LED diffuser — 3 layers for red/blue, 2 for white. |
 | **D21** | **The printer moves in, and Kobra Slicer's first real print** | Final coat of paint, holes drilled for the tube pass-through and ACE Pro cable, all wiring run and tidied — then the K3M itself went into the finished enclosure for the first time, ACE Pro on top. Kobra LAN Monitor gained camera rotation (v1.0.6), fixing a real layout bug it exposed along the way. Kobra Slicer got its first ever real print running on the printer — followed by a real firmware lockup, recovered with a power cycle. |
+| **D22** | **Nothing today** | First day back at the day job after a week off, and it hurt — neck/back/shoulder pain. No build progress. |
 ---
 
 ## Day 1 — Arrival & Rinkhals
@@ -769,6 +771,12 @@ It didn't last. A short way in, the printer locked up completely — unresponsiv
 With the enclosure now dark inside (no light dependency for the camera either, as it turns out — the EZVIZ's IR night vision gives a clear view even with the light off), LED support brackets got designed and are printing — watched live through Kobra LAN Monitor, light off, camera view clear the whole way through on IR alone.
 
 ![Kobra LAN Monitor watching the LED support brackets print, enclosure light off, EZVIZ IR night vision carrying the whole view](images/dryer-enclosure-build-day21/06-led-support-printing-ir-nightvision.png)
+
+---
+
+## Day 22 — Nothing Today
+
+Nothing done on the build today. Been on a week off work for neck/back and shoulder issues, first day back today, and it's a lot of pain today. Back to it when things ease up.
 
 ---
 
