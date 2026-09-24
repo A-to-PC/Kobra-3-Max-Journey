@@ -780,6 +780,52 @@ Nothing done on the build today. Been on a week off work for neck/back and shoul
 
 ---
 
+## Day 24 — Lights Working, a Second Fan, and the Bowden Support Rethought
+
+> **TL;DR** — Two quiet days (23-24) in between, then back on it: the printed LED channels got fitted to the roof and the strip soldered in, giving the enclosure real dimmable lighting for the first time. A second fan went in underneath, forcing air in while the roof fan exhausts it, wired to the same relay for now (a noisy unit, testing-only until a quieter one's sourced). The Bowden tube support piece got reworked from an enclosed square slide-on tunnel to round, genuinely open channels — verified with an actual cross-section render, not just eyeballing it. Separately, on the Kobra Slicer side: the recurring stuck-"Downloading files" bug got a sharper diagnosis (looks specific to OrcaSlicer's own code, not the printer), and a filament-remaining counter feature got fully spec'd out, ready to build.
+
+### Lights in, dimmable, for real
+
+The printed LED channels got screwed to the roof and the strip soldered in and pressed into place.
+
+![The printed LED channel and the LED strip, pre-cut and pre-fit, on the printer bed](images/dryer-enclosure-build-day24/01-led-channel-and-strip-precut.jpg)
+
+Lit, dimmable, and giving proper even coverage across the bed for the first time — no more working blind on jobs needing good visibility.
+
+![The enclosure lit from the roof-mounted LED channels, dimmable, even coverage across the bed](images/dryer-enclosure-build-day24/03-led-lights-fitted-dimmable.jpg)
+
+![Lights on alongside the live control panel — dimmer, temp controller, and mains switch all working together](images/dryer-enclosure-build-day24/04-led-lights-and-control-panel-live.jpg)
+
+![The finished control panel — PID temp controller, restart button, and dimmer, all wired and reading live](images/dryer-enclosure-build-day24/06-control-panel-finished.jpg)
+
+### A second fan for active cooling
+
+The active-air-cooling setup gained a second fan, mounted underneath and forcing air in while the existing roof fan exhausts it — same relay as the exhaust fan for now, so they switch together. The unit on hand is noisy, so it's testing-only until a quieter replacement gets sourced.
+
+![The second fan fitted underneath, forcing air in, wired and ready](images/dryer-enclosure-build-day24/05-second-intake-fan-fitted.jpg)
+
+### The Bowden tube support, rethought from scratch
+
+The 3D-printed piece managing the Bowden tube bundle at the roof pass-through went through a real redesign: from an enclosed, square, slide-on tunnel to genuinely open, round channels — a half-pipe/gutter shape the tube bundle drops into from above rather than threading through end-to-end. Verified the channels were actually open (not just square-shaped differently) with a real cross-section render through the model, not just a visual check from the outside.
+
+Alongside that, worked out a plan for controlling the tube bundle's slack through its full range of travel: a pull cable anchored close to the roof pass-through, running in-line with the tubes so it feeds straight rather than binding, using a rounded-off Anycubic tube-support star (points smoothed so it doesn't snag going through the roof grommet) with the cable tied through its centre hole and captured between heat-shrink bands above and below — no glue needed, since PTFE barely bonds to adhesive anyway. Test-fitted the rounded star through the roof grommet successfully; full assembly (bigger heat shrink needed) is the next step.
+
+![The two Anycubic tube-support stars — one with points rounded off for the grommet, one still sharp — test-fit through the roof pass-through](images/dryer-enclosure-build-day24/02-bowden-support-stars-rounded-vs-sharp.jpg)
+
+### Wiring box, started
+
+Started boxing in the wiring run behind the control panel — the last exposed section left from Day 20's wiring pass.
+
+![The wiring cavity behind the control panel, box started](images/dryer-enclosure-build-day24/07-wiring-box-started-behind-panel.jpg)
+
+### Kobra Slicer: a sharper diagnosis on the stuck-download bug, and a filament counter spec'd
+
+Recapped the recurring "hangs on Downloading files" symptom across every real test so far, and a clearer pattern fell out of it: Slicer Next (Anycubic's own app) and Kobra LAN Monitor (this project's own from-scratch MQTT client) both fire real prints reliably, no manual workaround ever needed. Vanilla OrcaSlicer on Rinkhals (Day 2) and Kobra Slicer on stock firmware (Day 18, Day 21) have never fired cleanly — only ever printed by manually bypassing the stuck screen via the printer's own touchscreen file list. The common factor in the two that fail is that both are OrcaSlicer's own upload/print-trigger code, across two different firmware paths — pointing at something specific in how OrcaSlicer sequences state after upload, not the print command itself (which LAN Monitor's own working button already proves is fine) and not a firmware quirk.
+
+Also fully spec'd a planned feature: a per-AMS-slot filament counter, so a print can't start without enough filament left to finish. Tracked per physical AMS slot (1-4), not by colour or material preset. Checked at slice time against the already-computed per-slot usage estimate. New-spool prompt: full spool or enter what's left. Backup handling kept simple — if AMS backup is on, it's always a fixed 1→2→3→4 chain, so all 4 slots get summed into one pool; if it's off, just the selected slot gets checked. Ready to build next time this project's picked back up.
+
+---
+
 ## Reference: My Confirmed Calibration
 
 > Every value below is confirmed against a real, physical print on this one printer, with this one filament — not a slicer default, not a guess, but also not a universal number for every Kobra 3 Max. Different filament, a different unit off the line, or a different environment will all shift these. Treat the table as a worked example of the process and a realistic starting point, not a number to copy in blind — run the same sweeps on your own machine and filament before trusting a print to them. Confirmed [Day 12](#day-12--clean-prints-for-real).
