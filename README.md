@@ -826,6 +826,50 @@ Also fully spec'd a planned feature: a per-AMS-slot filament counter, so a print
 
 ---
 
+## Day 25 — Rear Door Sealed, Tube Retraction Fitted, and a Real Slicer Profile Bug Found
+
+> **TL;DR** — The rear access door got properly sealed, the retraction line and reel for managing the Bowden tube bundle's slack went in on its mounting post, the wiring box gained a real hinged door, and the thermometer wiring got extended. Separately, chasing a print quality problem (a wall-to-bottom-shell gap, front-to-back only) led to finding a genuine conflict in the PLA slicer profiles — `bottom_shell_layers` and `bottom_shell_thickness` disagreed with each other, silently padding an extra, unnecessary layer right at the shell transition. Fixed across all profiles, and the whole PLA profile set got properly reorganised into three genuine layer-height tiers (0.12/0.16/0.2mm) along the way, instead of one profile with its layer height hand-overridden.
+
+### Enclosure: door sealed, tube retraction fitted, wiring boxed
+
+The rear access door got properly sealed along its edge.
+
+![The rear access door's sealed edge, closed up against the frame](images/dryer-enclosure-build-day25/01-rear-door-sealed-edge.jpg)
+
+The retraction line and reel for the Bowden tube bundle went in on its mounting post — the mechanism worked out in detail over the past couple of days: a solid braided line runs from the hot head up to a junction star, and a single retractable line (reusing the same reel hardware already proven on the toolhead/bed cable-management mod) runs from that star up to the reel, automatically taking up slack through the whole range of travel rather than needing a fixed anchor point. The line's attached to the junction star with tape for now, not the planned heat-shrink — no 15mm+ heat shrink available anywhere in town on the day, so tape is standing in until some is sourced.
+
+![The retraction reel mounted on its post, tube bundle running down](images/dryer-enclosure-build-day25/02-retraction-reel-mounted-on-post.jpg)
+
+![The retraction line running through the enclosure alongside the tube bundle](images/dryer-enclosure-build-day25/03-retraction-line-through-enclosure.jpg)
+
+The wiring box behind the control panel got a real hinged door — the last exposed section from the original wiring pass now properly enclosed.
+
+![The wiring box door, closed](images/dryer-enclosure-build-day25/04-wiring-box-door-closed.jpg)
+
+![The wiring box door open, showing the wiring inside](images/dryer-enclosure-build-day25/05-wiring-box-door-open.jpg)
+
+The thermometer wiring got extended, all protruding screws ground back, and the WiFi camera moved to stop it getting knocked during normal use.
+
+![Extended thermometer wiring and the control panel area](images/dryer-enclosure-build-day25/06-thermometer-wiring-extended.jpg)
+
+![Control panel detail — dimmer, switch, and temp controller](images/dryer-enclosure-build-day25/07-control-panel-detail.jpg)
+
+### A real bug found in the PLA slicer profiles
+
+Chasing a print quality problem — a gap between wall and bottom shell, showing up only on one axis (front-to-back, not side-to-side) and only on layer 4 — led to actually reading through the PLA process profiles rather than guessing. Found a genuine conflict: `bottom_shell_layers` was explicitly set to 4, but `bottom_shell_thickness` (0.6mm) only calls for 3 layers at 0.2mm layer height. When the two disagree, the slicer takes whichever produces more layers, silently padding in an extra, not-strictly-needed layer right at the boundary where the toolpath transitions from the solid bottom shell to normal infill — a plausible real cause for a gap forming exactly there.
+
+Fixed by making `bottom_shell_thickness` agree with 4 layers at each profile's own layer height (0.48mm / 0.64mm / 0.8mm for 0.12/0.16/0.2mm respectively), removing the conflict everywhere, not just the one combination that was causing the visible problem.
+
+While in there, two other real deviations from Anycubic's own stock speeds turned up and got reset back to stock: `outer_wall_speed`/`inner_wall_speed` had been pushed up to 150mm/s from Anycubic's own 120/140, and `overhang_4_4_speed` (the steepest overhang category) had been pushed to 15mm/s from stock's more conservative 10mm/s — both from a pre-calibration YouTube-sourced starting point, both working against finish quality rather than for it.
+
+### PLA profiles properly split into three real layer-height tiers
+
+The underlying reason the shell conflict only showed up at one layer height: the working PLA profile had its `layer_height` hand-overridden to 0.2mm while still inheriting from Anycubic's "0.16mm Standard" base — meaning the profile's name and its actual behaviour didn't match, and settings tuned for one layer height were being applied to a different one. A 0.12mm print (a keyboard joystick with tight 0.2mm print-in-place clearances) had previously had 3 of 4 rotating parts fail to free at all, and the 4th only came free under heavy force — plausibly the same root cause, since that print used the same hand-override trick at a different value.
+
+Reorganised into six real profiles instead: `0.12 PLA`, `0.16 PLA`, `0.2 PLA`, and a Multi Colour variant of each, every one correctly inheriting from its own matching Anycubic base profile rather than a single profile with its layer height forced. Same custom settings carried across all six, cleanly, with the corrected shell-thickness values baked in from the start.
+
+---
+
 ## Reference: My Confirmed Calibration
 
 > Every value below is confirmed against a real, physical print on this one printer, with this one filament — not a slicer default, not a guess, but also not a universal number for every Kobra 3 Max. Different filament, a different unit off the line, or a different environment will all shift these. Treat the table as a worked example of the process and a realistic starting point, not a number to copy in blind — run the same sweeps on your own machine and filament before trusting a print to them. Confirmed [Day 12](#day-12--clean-prints-for-real).
