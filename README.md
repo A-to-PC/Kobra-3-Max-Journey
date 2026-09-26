@@ -862,6 +862,42 @@ Fixed by making `bottom_shell_thickness` agree with 4 layers at each profile's o
 
 While in there, two other real deviations from Anycubic's own stock speeds turned up and got reset back to stock: `outer_wall_speed`/`inner_wall_speed` had been pushed up to 150mm/s from Anycubic's own 120/140, and `overhang_4_4_speed` (the steepest overhang category) had been pushed to 15mm/s from stock's more conservative 10mm/s — both from a pre-calibration YouTube-sourced starting point, both working against finish quality rather than for it.
 
+## Day 26 — Exterior Painted, New Profile Running, and the Filament Hub Sorted Without Guessing
+
+> **TL;DR** — The enclosure's exterior got its final coat, the corrected `.2 PLA` profile went on a real print, and the retraction line's cable clips got hot-glued down to stop them rattling. Separately, rather than keep guessing at the real filament hub's internals, the actual reference STLs got pulled into Blender and measured directly — confirming it's a two-part Cap-feeds-Body design, and turning up ready-made 4-port and 5-port versions of the exact same hub plus a proper multi-tube organiser clip, all from the same designer, meaning no from-scratch rebuild is even needed. Also worked out a real bulk-filament buying and storage plan, sized against the dryer drawers this build has been putting together all along.
+
+### Exterior painted, new profile on trial, cable clips secured
+
+Final coat went on the exterior — the whole enclosure now reads as one finished unit rather than a stack of separate panels.
+
+![The full enclosure with its painted exterior finished, printer running inside](images/dryer-enclosure-build-day26/01-full-enclosure-painted-exterior.jpg)
+
+![Paint finish detail on the side panels](images/dryer-enclosure-build-day26/02-paint-finish-detail.jpg)
+
+A print went on with the newly-corrected `.2 PLA` profile — first real test of the `bottom_shell_thickness` fix and the reset-to-stock wall/overhang speeds from Day 25, running with the enclosure fully wired and closed up.
+
+![The corrected profile running inside the finished, wired enclosure](images/dryer-enclosure-build-day26/03-new-profile-print-running-interior-wired.jpg)
+
+The retraction line's cable clips got hot-glued to their mounting bracket — they'd been rattling loose before this, a small fix but one that stops a real annoyance every time the toolhead moves.
+
+![A retraction cable clip hot-glued to its bracket](images/dryer-enclosure-build-day26/04-retraction-clip-hot-glued.jpg)
+
+### The filament hub, measured instead of guessed
+
+An earlier attempt at a parametric filament hub had been rejected outright for looking nothing like the real reference design — a fair call, since it had been built blind, from a description rather than the actual part. Rather than guess again, the real reference STLs (a "Kobra 3 9 colour hub" — Body and Cap, from a designer credited as Mirkosa/DIYfinitive) got pulled into Blender directly and measured.
+
+The real design turned out to be a two-part funnel: the **Cap** is a 38mm round disc carrying the individual tube positions — 9 of them, arranged in a 3×3 grid — and the **Body** is a tapered bucket, wide open at the top where the Cap sits, narrowing down over 52mm to a single small connector boss near the toolhead. Confirmed by direct bounding-box measurement and cross-section renders, not by eye. Nothing like the flat block-with-parallel-holes shape the first attempt had produced — the rejection was correct.
+
+![Straight-on Blender render of the reference hub's Cap, showing the 3×3 grid of 9 tube positions](images/dryer-enclosure-build-day26/05-hub-cap-3x3-grid-reference.png)
+
+Rather than cut the 9-position Cap down to the 4 positions actually needed, it turned out the same designer already publishes a **4-port** and a **5-port** version of the exact same hub — no modification required at all. A separate multi-tube organiser clip (2-6 tubes, by catchworks) also turned up, a proper replacement for the taped star-and-reel junction the tube retraction line has been running through until now. The plan going forward: swap the coupler mounting holes for a plain bore sized to brass heat-set inserts rather than printed M5 threads — stronger, and no risk of stripping printed threads under repeated fitting changes.
+
+### A real bulk-filament plan, sized against the drawers already built
+
+With the dryer drawers now near enough to finished to count spots, a real filament stock plan got worked out: roughly 80 spool positions total, split into a top-drawer active tier and a bulk reserve. Ten rolls of black/white — the highest-turnover colours by far — get replaced on a marked FIFO rotation as they're used, so the oldest roll is always the one grabbed next. Five rolls of each standard colour and two of each silk colour keep a decent working set without over-committing to slow movers, and the two transparent finishes get just one roll each, since they move the slowest of all.
+
+Only one roll of each active colour actually lives in the dryer at a time, with a single backup alongside it — the rest of the bulk buy sits sealed and in the dark in a cupboard until it's rotated in. That split matters: a 5-year-old, still-sealed roll of blue had clogged the K3M early on in this build, proof that "sealed" buys a safe window rather than indefinite shelf life. At the actual burn rate on black/white — another roll needed roughly every two prints recently — even 20 rolls would cycle through well inside a safe 1-2 year window, so the FIFO system is there to protect the slower-moving colours, not the workhorses.
+
 ### PLA profiles properly split into three real layer-height tiers
 
 The underlying reason the shell conflict only showed up at one layer height: the working PLA profile had its `layer_height` hand-overridden to 0.2mm while still inheriting from Anycubic's "0.16mm Standard" base — meaning the profile's name and its actual behaviour didn't match, and settings tuned for one layer height were being applied to a different one. A 0.12mm print (a keyboard joystick with tight 0.2mm print-in-place clearances) had previously had 3 of 4 rotating parts fail to free at all, and the 4th only came free under heavy force — plausibly the same root cause, since that print used the same hand-override trick at a different value.
