@@ -980,6 +980,8 @@ Scroll the wheel over the live camera image and it zooms toward the cursor, up t
 
 > Every value below is confirmed against a real, physical print on this one printer, with this one filament — not a slicer default, not a guess, but also not a universal number for every Kobra 3 Max. Different filament, a different unit off the line, or a different environment will all shift these. Treat the table as a worked example of the process and a realistic starting point, not a number to copy in blind — run the same sweeps on your own machine and filament before trusting a print to them. Confirmed [Day 12](#day-12--clean-prints-for-real).
 
+**Base profiles these values live under:** printer `AK3 MAX 0.4 Nozzle`, filament `PLA`, process `.2 PLA`.
+
 | Parameter | Value | Notes |
 |---|---|---|
 | Nozzle temperature | **240°C** | Real 210–240°C sweep, 5° steps — confirmed live, block transitions landed exactly on the predicted layer. |
