@@ -59,6 +59,7 @@
 - [Day 24 — Lights Working, a Second Fan, and the Bowden Support Rethought](#day-24--lights-working-a-second-fan-and-the-bowden-support-rethought)
 - [Day 25 — Rear Door Sealed, Tube Retraction Fitted, and a Real Slicer Profile Bug Found](#day-25--rear-door-sealed-tube-retraction-fitted-and-a-real-slicer-profile-bug-found)
 - [Day 26 — Exterior Painted, New Profile Running, and the Filament Hub Sorted Without Guessing](#day-26--exterior-painted-new-profile-running-and-the-filament-hub-sorted-without-guessing)
+- [Day 27 — Kobra Slicer's Upload and Print, Actually Working](#day-27--kobra-slicers-upload-and-print-actually-working)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -921,6 +922,44 @@ Reorganised into six real profiles instead: `0.12 PLA`, `0.16 PLA`, `0.2 PLA`, a
 
 ---
 
+## Day 27 — Kobra Slicer's Upload and Print, Actually Working
+
+> **TL;DR** — Kobra Slicer's real "Upload and Print" finally works end to end, after four separate, real bugs were found and fixed in one sitting: an access-violation crash in a bodyless HTTP request, a JSON library that silently quoted every number and boolean as a string, a whole file the real package format needs that this fork was never writing, and a raw socket close that looked like a crash to the printer's own firmware. Also released real fixes for two of the other tools this project has built: Kobra Time Lapse v1.0.6 (the final layer of a print was never being captured) and Kobra LAN Monitor v1.0.7 (wheel-zoom on the live camera feed).
+
+### The starting theory, and the first real capture
+
+The stuck-"Downloading files" bug had been narrowed down before today to one thing: Kobra Slicer's `AnycubicLink` print host uploads the file over plain HTTP and stops there — it never sends the second signal, over the printer's own MQTT channel, that actually tells it to start. Kobra LAN Monitor already does this correctly and has fired real prints before, so the shape of the fix seemed obvious: port that same MQTT command into the C++ slicer.
+
+Rather than guess at the message from documentation, a legitimate MQTT subscriber settled it directly. A throwaway build of Kobra LAN Monitor was pointed at the printer's `slicer` and `web` topic prefixes, not just its own report channel — since MQTT fans a publish out to every subscriber on a matching topic, this saw Slicer Next's own real print/start command in plaintext the moment it was sent, no TLS decryption needed. That gave the exact topic (`.../slicer/printer/{model}/{device}/print`) and the full real payload: task id, filename, an MD5 of the uploaded file, file size, AMS mapping, and task settings. The likely reason Kobra LAN Monitor's own simpler command was never proven against a Kobra-Slicer file specifically: it's missing `md5`/`filesize` entirely and sits on a different topic.
+
+### Bug 1: a crash, from a request with no body
+
+Implementing this needed the same credential-discovery handshake Kobra LAN Monitor already does in C# (`/info`, a signed `/ctrl` request, AES-128-CBC decrypt) ported to C++, plus a minimal hand-rolled MQTT client over the deps tree's existing Boost.Asio and OpenSSL — deliberately not a full MQTT library, since publishing one QoS-0 message is all this needs. First real test crashed the app outright. The crash log pointed at a genuine, pre-existing bug in this codebase's shared HTTP wrapper: it always wires up a file-upload read callback for every request, even a plain bodyless POST, and with no actual file attached, curl called that callback with a null pointer. Every other caller in this codebase happens to always attach a body; a bodyless POST — needed here since the real credential handshake sends its data as query-string parameters — was new ground. Fixed in the new code with a one-line workaround, not by touching the shared file every other upload path depends on.
+
+### Bug 2: every number sent as a quoted string
+
+With the crash gone, the message reached the printer's broker (confirmed by watching it arrive on a second, independent subscriber) but the printer did nothing. Diffing the sent bytes against the real captured message showed why: `boost::property_tree`'s JSON writer, a well-documented limitation, had quoted every number and boolean as a string — `"filetype":"1"` instead of `1`, `"use_ams":"true"` instead of `true`. The printer's firmware likely expects real typed JSON and just silently drops anything else rather than rejecting it. Fixed by hand-building this one small, fixed-shape payload as a plain string instead of fighting the library.
+
+### Bug 3: a whole file the real package format needs
+
+Next attempt got further — a real, specific error back from the printer this time: `code 10115, "The device cannot parse the file"`. That's genuine progress in itself: the command was being received and understood, just failing on the file. Getting a real reference file settled it fast — Slicer Next can't export a raw `.gcode.3mf` from its own menu, but printing from it and then exporting from the printer's own file list to USB gave the exact bytes the printer had already accepted once. A byte-for-byte structural diff against Kobra Slicer's own export showed one substantial file completely missing: `Metadata/plate_N.gcode.metadata`, a lightweight header-only copy of the gcode — thumbnail, config, AMS info, print stats — with the actual multi-megabyte toolpath left out, seemingly used by the firmware to read print details without loading the whole file. Fixed by generating that sibling file at export time, reusing markers this fork's own gcode output already contains.
+
+### Bug 4: a clean goodbye, not a dropped connection
+
+The file now parsed. But every attempt — even a fresh one straight after a full power cycle — needed another power cycle to recover, with the printer's own `k3c` service reporting `"k3c is shutdowing, please try later"` the moment a new attempt came in. The real cause: the MQTT connection was being torn down with a raw TCP socket shutdown, no proper MQTT DISCONNECT packet and no TLS close_notify first. To the broker, that's indistinguishable from the client crashing mid-session, and it's a real, genuine bug — not something worth continuing to test against real hardware while it stood. Fixed with a proper MQTT DISCONNECT and a clean TLS shutdown before closing.
+
+### A real, clean success
+
+To confirm the fix without another slow C++ rebuild cycle, the real Slicer Next reference file was uploaded and printed directly with a small Python script exercising the exact same protocol — bypassing Kobra Slicer's own build entirely. Clean result: `auto_leveling`, then `busy`, bed and nozzle both climbing toward target temperature, no crash, no parse error, no `k3c` failure. First genuinely correct, self-triggered print/start this project has ever produced. Kobra Slicer's own full build, with all four fixes together, is rebuilt and ready — testing Upload and Print through the real app itself, not just the standalone script, is the next real confirmation still needed.
+
+### Kobra Time Lapse v1.0.6 — the final layer was never captured
+
+Separately: the app had been ending a capture session the moment the printer's reported current layer reached the total layer count — true the instant the *final* layer starts, not when it actually finishes, so the last layer's frames were silently missing from every finished video. Fixed with a grace period (1.5× the previous layer's duration, minimum 2 minutes) before trusting that signal, plus a new option to read Kobra LAN Monitor's own saved camera rotation for the same camera, so the two apps agree on orientation without setting it twice. Confirmed live on a real print — final layer captured, video upright — and released as v1.0.6.
+
+### Kobra LAN Monitor v1.0.7 — wheel-zoom on the camera feed
+
+Scroll the wheel over the live camera image and it zooms toward the cursor, up to 4x, purely via a CSS transform inside the existing camera card — the card itself never resizes. Works on both the onboard and network camera sources, resets on stop/start. Tested against the real printer, then released.
+
 ## Reference: My Confirmed Calibration
 
 > Every value below is confirmed against a real, physical print on this one printer, with this one filament — not a slicer default, not a guess, but also not a universal number for every Kobra 3 Max. Different filament, a different unit off the line, or a different environment will all shift these. Treat the table as a worked example of the process and a realistic starting point, not a number to copy in blind — run the same sweeps on your own machine and filament before trusting a print to them. Confirmed [Day 12](#day-12--clean-prints-for-real).
@@ -1018,6 +1057,8 @@ If you only read one section, read this one.
 - [x] **If ACE Pro auto-backup keeps swapping colours mid-print, check the printer's own backup setting.** Left on its default, it substitutes by material type only, not colour — tightening or disabling it in the printer's own settings, not a firmware bug, is what fixed it here.
 - [x] **On LAN mode, don't expect Anycubic's own "check for updates" to work at all.** It only functions over the cloud connection LAN mode deliberately disables. Compare your printer's reported version against a public firmware list yourself instead of waiting on it.
 - [x] **Use a purpose-built filament-RFID app to program ACE Pro tags, not a generic NFC read/write app.** The ACE Pro reads structured data, not plain text — and a generic app can permanently lock a tag (a real hardware one-way lock bit) before you even realise the write was wrong.
+- [x] **Always send a real MQTT DISCONNECT and a clean TLS shutdown before closing a connection, never just a raw socket close.** A one-shot publish-then-close looked complete on the client side, but to this printer's own broker/firmware it was indistinguishable from the client crashing mid-session — every single attempt left the print-control service needing a full power cycle to recover, real wear on real hardware for a connection-teardown bug.
+- [x] **When a library silently mishandles your data, diffing your own output against a known-good real capture finds it fast; guessing at the cause doesn't.** `boost::property_tree`'s JSON writer quoting every number and boolean as a string was invisible until the sent bytes were compared field-by-field against a genuine reference message.
 
 ---
 
