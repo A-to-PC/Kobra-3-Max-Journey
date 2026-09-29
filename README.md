@@ -60,6 +60,8 @@
 - [Day 25 — Rear Door Sealed, Tube Retraction Fitted, and a Real Slicer Profile Bug Found](#day-25--rear-door-sealed-tube-retraction-fitted-and-a-real-slicer-profile-bug-found)
 - [Day 26 — Exterior Painted, New Profile Running, and the Filament Hub Sorted Without Guessing](#day-26--exterior-painted-new-profile-running-and-the-filament-hub-sorted-without-guessing)
 - [Day 27 — Kobra Slicer's Upload and Print: A Real Diffing Marathon, Not Yet Confirmed](#day-27--kobra-slicers-upload-and-print-a-real-diffing-marathon-not-yet-confirmed)
+- [Day 28 — Six More Real Bugs Fixed, and Still Locking the Printer Up](#day-28--six-more-real-bugs-fixed-and-still-locking-the-printer-up)
+- [Day 29 — Root-Caused for Real: One Line in the Gcode Was Crashing the Firmware](#day-29--root-caused-for-real-one-line-in-the-gcode-was-crashing-the-firmware)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -975,6 +977,76 @@ Separately: the app had been ending a capture session the moment the printer's r
 ### Kobra LAN Monitor v1.0.7 — wheel-zoom on the camera feed
 
 Scroll the wheel over the live camera image and it zooms toward the cursor, up to 4x, purely via a CSS transform inside the existing camera card — the card itself never resizes. Works on both the onboard and network camera sources, resets on stop/start. Tested against the real printer, then released.
+
+## Day 28 — Six More Real Bugs Fixed, and Still Locking the Printer Up
+
+> **TL;DR** — Bug 11 from yesterday rebuilt and confirmed correct, then Kobra Slicer's own file still failed. Real head-vs-tray identity bug found by comparing two genuinely captured Slicer Next successes (one white, one black) against each other, not against a theory. A full sequencing bug found the same way: the file-verification step was firing before `print/start`, not after, when the real capture proved it never does. Real M900-vs-Klipper-macro mismatch, a filename format the printer's own real files never use, and a placeholder material ID left over from a generic profile all found and fixed the same way — every one confirmed byte-for-byte against a genuine capture, not assumed. All six landed, rebuilt, confirmed present in the export. The printer still locked up on every single send. A day of being told, directly and more than once, to stop guessing and actually finish the comparison properly — and being right to say it.
+
+### Bug 11, confirmed
+
+Yesterday's deepest find — the wrong tool number, built from the raw AMS tray index instead of the physical extruder id — rebuilt clean overnight and confirmed present in a fresh export. Real progress, but not the finish line: sent for real, the printer answered with the exact same `"k3c is shutdowing, please try later"` it had been giving all along.
+
+### A real, disciplined instruction, more than once
+
+*"compare everything from end to end, we are missing something."* Not a one-off — the same demand came back repeatedly today, in different words, every time a partial check got treated as good enough: *"we are missing something in the compare, you skipped something hard or forgot to go back."* Both times, going back and actually doing the full, literal, unabridged comparison — not a summary of it — is what turned something real up. The method mattered more today than any individual fix did.
+
+### Bug 12 — the ACE Pro's tray conflated with the K3M's own head
+
+A second genuine real capture — this print done again, on tray 2/black instead of tray 1/white, deliberately, specifically so there'd be two real successes to compare against each other instead of one success and a theory — showed something the single-capture comparison could never have caught: the real payload's `paint_index` stayed at `1` in *both* captures, only `ams_index` changed between them. Kobra Slicer's own export had been building `paint_index` from the project's filament slot number, which happened to match the first real capture by coincidence and broke the moment a different slot got tested. The real distinction: the K3M has exactly one physical head, and `paint_index` describes that head's own position in the file's colour list — always the same value for a single-material file, regardless of which physical tray fed it. `ams_index` is the ACE Pro's own, separate concern. *"like I said it is a single head unit, changing the head number is wrong as it is fed by ace pro not k3m"* — exactly the distinction the fix needed to make. Found in two places in the gcode-writing code (the same bug, duplicated), both fixed to use the file's own colour-list position instead of the raw project slot.
+
+### Bug 13 — a verification step firing before the thing it was meant to verify
+
+The file-exists check (confirming the just-uploaded file was actually present) had been sitting immediately before `print/start`, on the reasoning that checking a file exists before using it is the obvious order. A complete, careful, line-by-line re-extraction of the one confirmed-real success — not a sampled or summarised one — showed that reasoning was simply wrong: the real client never checks first. It sends `print/start` almost immediately after a single readiness ping, and the file-details check only shows up much later, well after acceptance, as confirmation, not as a gate. Moved to match — non-fatal there too, since the real client never fails a print over it.
+
+### Bug 14 — the wrong pressure-advance command for this specific firmware
+
+The gcode's own pressure-advance line read `SET_PRESSURE_ADVANCE ADVANCE=0.05` — the real, correct native Klipper macro, matching this fork's own generic klipper-flavour logic exactly. The real captured file used `M900 K0.05` instead — the older, Marlin-style command — despite both files declaring the identical `gcode_flavor: klipper`. Anycubic's own real firmware keeps the older syntax for this one specific command regardless of the flavour label elsewhere. Forced to `M900` specifically for Anycubic printers; confirmed the rest of the file's genuine Klipper macros (found `SET_VELOCITY_LIMIT`, used exactly once in both the real file and this one) weren't also wrong, so this wasn't over-corrected into a blanket "never use Klipper syntax" rule it didn't need.
+
+### Bug 15 — a filename format this fork's own other profiles already had right
+
+The exported filename (`obj_2_Sheep_PLA_0.2_1h26m.gcode.3mf`) didn't match the real file's own format (`0929-0816-obj_2_Sheep_plate(01)_PLA_0.2_1h13m9s.gcode.3mf`) — no timestamp, no plate number. The fix didn't need reverse-engineering: this fork's own Kobra S1 Max and Kobra X profiles already carry the correct timestamp-and-plate-number template; only the Kobra 3 Max process profiles had been left on the older, plain one. Applied the already-correct template from this fork's own sibling profiles to all sixteen Kobra 3 Max variants — a JSON-only fix, no rebuild needed.
+
+### Bug 16 — a generic placeholder ID where a real one belongs
+
+The gcode's `tray_info_idx` field read `GFL99` on every single Anycubic PLA variant across every printer model in this fork — the same value, copied wholesale, never actually customised per material. The real Slicer Next system profile for the identical filament uses `GFPLA`; its own PLA Matte, PLA Silk, PLA High Speed and PLA+ variants each carry their own distinct real ID (`GFPLA Matte`, `GFPLA Silk`, and so on) rather than sharing one. Fixed across every profile this fork has a real reference value for; left the handful with no real Slicer Next counterpart alone rather than inventing one.
+
+### Still locked up, and a real correction taken on the chin
+
+Every one of the six fixes above confirmed present, correct, and byte-for-byte matching real evidence in the actual exported file. Sent for real. Identical rejection, identical lockup, identical need for a power cycle. At one point, re-checking an already-fixed file size discrepancy out loud — before finishing the check and finding it was a false alarm — read as reopening something already settled: *"are you fucking kidding me, I specifically asked you to check that yesterday and you stated it was fixed."* It hadn't reopened; the correction had just been said out loud before it was complete, which is its own kind of sloppy. Ended the day with a repeat of the same disciplined instruction that had already been right twice today: get access to the printer's own live logs and watch the actual failure happen, rather than continuing to infer it from the outside.
+
+## Day 29 — Root-Caused for Real: One Line in the Gcode Was Crashing the Firmware
+
+> **TL;DR** — SSH access to the printer (via Rinkhals, reinstalled specifically for this and removed again afterward) let the actual crash be watched live for the first time in this entire investigation, instead of inferred from outside. `gklib` — Anycubic's own Go-based Klipper — opens the uploaded file, selects it, and then dies in complete silence: no error, no log line, nothing. Real evidence from the printer's own kernel log first pointed at what looked like a hardware fault (the ACE Pro's USB connection flapping repeatedly) — a wrong conclusion, corrected directly and immediately, since the same physical hardware runs fine under Slicer Next: *"slicr net works fine, this is not a hardware issue, it is a commands issue in the code."* That correction pointed the investigation at the actual cause: a real, third-party-documented bug in the printer's own firmware, where a specific comment line newer OrcaSlicer versions write into the gcode — `; filament_colour_type` — crashes Anycubic's Go firmware outright with a Go runtime panic, error code 10111. The exact code on every single rejection this entire investigation has produced. Stripped from the output, confirmed absent from the real reference file and present in every one of Kobra Slicer's own exports until now, then confirmed on a genuinely clean, freshly reinstalled stock firmware with zero leftover settings: a real, complete, successful print, first layer to last, first time ever from this slicer.
+
+### Getting a real window into the crash
+
+Every previous attempt at proving Kobra Slicer's Upload and Print, going back to Day 21, had ended the same way: a rejection over MQTT, a full lockup, a power cycle, no visibility into what actually happened in between. *"we have been power cycling now for 2 days, going to fucking kill it soon"* — a completely fair description of where this had gotten to. The only way past it was watching the crash happen live instead of guessing at it from outside, which meant getting a real shell on the printer. Rinkhals was reinstalled specifically for this, on the clear, stated basis that it changes what's actually running underneath and would be removed the moment it had done its job: *"this rinkhals for ssh puts other stuff on also"* — never lost sight of, and it mattered later.
+
+### A wrong turn, corrected on the spot
+
+With a live SSH session running, the printer's own kernel log showed something real and startling: the ACE Pro's USB connection disconnecting and reconnecting every ~3.3 seconds, repeatedly, for as long as the log covered — read, at first, as a genuine hardware fault. Wrong, and said so directly: the same physical ACE Pro, on the same cable, prints fine from Slicer Next, so the hardware itself clearly isn't the problem. That correction — *"it is abrand new, this is what day 30 or 31, fuck all prints because of this hole process of the journey"* — turned the flapping from a cause into a symptom: something in the command sequence was crashing a process that was mid-conversation with the ACE Pro over that same USB link, and the flapping was the ACE Pro's own confused reaction to being abandoned mid-transaction, not a fault of its own.
+
+### Watching it actually happen
+
+Live process and kernel checks (crash dumps — none, core dumps are disabled in this firmware entirely; file permissions — clean) ruled out the two most obvious theories directly rather than by assumption. The real answer came from `gklib`'s own log, read straight off the printer while a fresh attempt was sent: it receives the print command, opens the exact uploaded file, logs `File selected` — and then nothing. Forever. No error, no exception, no further line of any kind. A crash with zero warning, not a rejection with a reason.
+
+### What "MmuAcePatcher" turned out to be
+
+The crashed file's very first line read `; processed by MmuAcePatcher` — a comment absent from anything this project's own code writes, and the real, direct answer for what it was came straight from experience with it: *"MmuAcePatcher is a class inside Rinkhals's mmu_ace.py Moonraker component. Its job is to patch MQTT print requests to inject ACE-specific data."* Pulled the actual component off the live printer to read it directly rather than guess at what it did — and inside it, a second file it references by name, `mmu_ace_metadata.py`, held the real answer, in a comment its own authors had already written for exactly this reason.
+
+### The actual bug, found in someone else's documented fix for it
+
+```python
+# Lines emitted by newer OrcaSlicer versions that Anycubic's Go firmware
+# (gklib) cannot parse — causes slice-bounds panic (error 10111).
+GCODE_STRIP_PREFIXES = ("; filament_colour_type",)
+```
+
+Error 10111 is the exact code on every single "k3c is shutdowing" rejection this entire investigation had produced, going back to Day 21. A real, independently discovered, documented bug in Anycubic's own firmware, found and worked around by an entirely separate open-source project, sitting there in plain text: a specific gcode comment line — one this fork's own, newer OrcaSlicer base writes into every export as a matter of course — crashes the printer's real gcode interpreter with an unrecoverable Go panic the instant it tries to parse it. Confirmed directly rather than taken on faith: the real reference file has zero occurrences of this line anywhere; Kobra Slicer's own export had it, once, in the full config dump every export writes into its footer. Fixed with one addition to a list this codebase already had for excluding sensitive keys from that same dump — no new mechanism needed, just one more entry in it.
+
+### Clean stock, no shortcuts, and the real result
+
+Confirming this properly meant reinstalling genuine stock firmware — not just disabling Rinkhals, a full reflash, verified directly against the real firmware's own update script to confirm it truly wipes everything, including SSH itself — so the result wouldn't be muddied by anything Rinkhals had touched. Reinstalled, rebuilt with the fix, sent for real, on a printer with every setting back to factory default: it printed. Auto-levelling, heating, first layer down clean, no gaps, watched hand-on-the-power-switch through the first several layers out of an entirely reasonable amount of caution after everything the previous nine days had cost. A black Sheep model, on tray 2, the first genuinely complete, real print Kobra Slicer's Upload and Print has ever produced.
 
 ## Reference: My Confirmed Calibration
 
