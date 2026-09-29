@@ -1054,6 +1054,10 @@ Error 10111 is the exact code on every single "k3c is shutdowing" rejection this
 
 Confirming this properly meant reinstalling genuine stock firmware — not just disabling Rinkhals, a full reflash, verified directly against the real firmware's own update script to confirm it truly wipes everything, including SSH itself — so the result wouldn't be muddied by anything Rinkhals had touched. Reinstalled, rebuilt with the fix, sent for real, on a printer with every setting back to factory default: it printed. Auto-levelling, heating, first layer down clean, no gaps, watched hand-on-the-power-switch through the first several layers out of an entirely reasonable amount of caution after everything the previous nine days had cost. A black Sheep model, on tray 2, the first genuinely complete, real print Kobra Slicer's Upload and Print has ever produced.
 
+![The finished print sitting on the K3M's own bed, gantry visible behind it](images/first-successful-print-day29/02-on-the-bed-in-the-k3m.jpg)
+
+![Held up for a close look — clean layers, no gaps, no stringing](images/first-successful-print-day29/03-in-hand-close-up.jpg)
+
 ### Confirmed complete, not just started
 
 It finished clean: 167 out of 167 layers, progress 100, no error state at any point start to
