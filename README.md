@@ -1070,6 +1070,10 @@ reflash to stock `2.5.2.8` (confirmed in the printer's own real capture data for
 no new printer-side calibration wizard run afterward — nothing tuned or set up specifically to
 make this particular attempt succeed. The only calibration in play was the filament/process
 profiles already built and saved inside Kobra Slicer from earlier in this project, unchanged.
+Confirmed directly in the print's own real `task_settings`: `vibration_compensation:0` and
+`flow_calibration:0` — Anycubic's own resonance and flow calibration routines never ran on this
+printer after the reflash. Only `auto_leveling:1` was on, which is the printer's normal live
+per-print bed mesh, not a first-boot setup step.
 
 Worth stating precisely, not oversold: this doesn't mean the printer doesn't need calibration —
 those profile numbers *are* real, hard-won calibration data, from the actual wizard-replacement
