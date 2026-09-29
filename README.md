@@ -1071,6 +1071,13 @@ no new printer-side calibration wizard run afterward — nothing tuned or set up
 make this particular attempt succeed. The only calibration in play was the filament/process
 profiles already built and saved inside Kobra Slicer from earlier in this project, unchanged.
 
+Worth stating precisely, not oversold: this doesn't mean the printer doesn't need calibration —
+those profile numbers *are* real, hard-won calibration data, from the actual wizard-replacement
+work done back on [Day 12](#day-12--clean-prints-for-real). What it does show is that a full stock
+reflash wipes whatever calibration state lives on the printer itself, but not calibration data
+that's already saved in a slicer profile — so there was nothing to redo, because the real numbers
+were never stored on the printer to begin with.
+
 ### Building a proof package that can survive being questioned in public
 
 This is going up publicly soon, including to Anycubic's own K3M Facebook page, so the evidence
