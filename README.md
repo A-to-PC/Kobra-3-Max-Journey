@@ -1065,6 +1065,12 @@ finish, no recalibration since the stock reflash — just the profiles already b
 project. No advantage taken of "it started fine" as good enough; the print was watched through
 to the actual end before calling it proven.
 
+Worth being precise about what "clean" means here: this ran straight off a fresh factory
+reflash to stock `2.5.2.8` (confirmed in the printer's own real capture data for the print), with
+no new printer-side calibration wizard run afterward — nothing tuned or set up specifically to
+make this particular attempt succeed. The only calibration in play was the filament/process
+profiles already built and saved inside Kobra Slicer from earlier in this project, unchanged.
+
 ### Building a proof package that can survive being questioned in public
 
 This is going up publicly soon, including to Anycubic's own K3M Facebook page, so the evidence
