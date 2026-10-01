@@ -1152,8 +1152,8 @@ minor bumps from there as updates land.
 
 ### The branding pass: real testing catches real gaps
 
-Asked in passing how hard the loading splash would be to swap from Orca's own logo to Kobra
-Slicer's — turned out to be a bigger, more useful question than expected. A full Kobra Slicer
+Caught the loading splash still showing Orca's own logo instead of Kobra Slicer's, and flagged
+it to get fixed — turned into a bigger, more useful catch than expected. A full Kobra Slicer
 branding pack already existed in the resources folder from the original rename work, just never
 fully wired in: the splash screen, the non-Windows taskbar icon fallback, and the installer's
 own icon were all still quietly pointing at stock Orca assets. Fixed all three. The About
