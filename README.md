@@ -62,6 +62,8 @@
 - [Day 27 — Kobra Slicer's Upload and Print: A Real Diffing Marathon, Not Yet Confirmed](#day-27--kobra-slicers-upload-and-print-a-real-diffing-marathon-not-yet-confirmed)
 - [Day 28 — Six More Real Bugs Fixed, and Still Locking the Printer Up](#day-28--six-more-real-bugs-fixed-and-still-locking-the-printer-up)
 - [Day 29 — Root-Caused for Real: One Line in the Gcode Was Crashing the Firmware](#day-29--root-caused-for-real-one-line-in-the-gcode-was-crashing-the-firmware)
+- [Day 30 — A Full Calibration Day, and a Real Bug Found in Orca's Own Tooling](#day-30--a-full-calibration-day-and-a-real-bug-found-in-orcas-own-tooling)
+- [Day 31 — Measuring the Cornering Theory for Real, and an Honest Torture Test](#day-31--measuring-the-cornering-theory-for-real-and-an-honest-torture-test)
 - [Reference: My Confirmed Calibration](#reference-my-confirmed-calibration)
 - [Reference: The Bench, Enclosure & Filament Dryer Build](#reference-the-bench-enclosure--filament-dryer-build)
 - [Reference: The Tools This Left Behind](#reference-the-tools-this-left-behind)
@@ -117,6 +119,8 @@ Jump to any day below for the full depth — this table is just a map of the sha
 | **D27** | **Kobra Slicer's Upload and Print: a real diffing marathon, not yet confirmed** | Four real MQTT protocol bugs fixed and validated live — but only by proving the protocol with a genuine Slicer-Next-exported file, not one Kobra Slicer itself produced. Called out for treating that as more than it was: sending Kobra Slicer's own file failed for real, on-device error `10133`. A full side-by-side diff of Kobra Slicer's own export against a genuine reference turned up seven more real bugs — six fixed and rebuilt, the seventh (deepest) fixed but untested when the night's work stopped. |
 | **D28** | **Six more real bugs fixed, and still locking the printer up** | Bug 11 confirmed correct, then Kobra Slicer's own file still failed. A head-vs-tray identity bug, a print/start-vs-file-verification sequencing bug, an M900-vs-Klipper-macro mismatch, a wrong filename format, and a leftover placeholder material ID — all found and fixed the same way, every one confirmed byte-for-byte against a genuine capture. All six landed and rebuilt. The printer still locked up on every single send. |
 | **D29** | **Root-caused for real, confirmed complete, and Phase 2 begins** | Live SSH access (Rinkhals, reinstalled specifically for this, fully removed after) let the actual crash be watched for the first time: a single gcode comment line, `; filament_colour_type`, crashing the printer's real Go firmware outright — the true cause behind every prior lockup, independently confirmed against a separate open-source project's own documented fix for the same bug. Fixed, and on a genuinely clean stock-firmware reflash: a complete, real, successful print, 167/167 layers, first ever from this slicer. A full evidence package built and hash-locked for the record — certificate, complete MQTT capture, proof index, the recovered printed file md5-verified against the upload capture, source locked into a git commit. Phase 2 (necessary-only cleanup before release) begins: the gcode header's identity spoof removed and confirmed working with a real second print (different model, different ACE Pro tray, tray addressing confirmed correct across both). Kobra Slicer given its own real, independent version number (`0.1.0` now, `1.0.0` at release). A real branding pass found and fixed the splash screen, taskbar/installer icons, and a single missed `#define` that had left "About Orca Slicer" in seven-plus dialog titles — caught and corrected from real hands-on testing, not guessed at blind. |
+| **D30** | **A full calibration day, and a real bug found in Orca's own tooling** | Full machine + slicer recalibration from scratch (not inherited from Slicer Next's broken wizards). Real numbers confirmed in the actual saved profile: flow ratio 1.0, pressure advance 0.078, max volumetric speed 9.7, retraction unchanged at 0.2 (a real sweep showed zero stringing throughout). VFA tested clean, no change needed. Cornering/input-shaping left at default after finding a real bug in OrcaSlicer's own calibration generator — confirmed by reading `Plater.cpp` directly: it mutates the live active profile instead of a disposable copy, upstream behaviour not specific to this fork. Three controlled A/B/C prints confirmed zero wall-to-shell gap issues, the exact problem chased for weeks back on Day 25-26. Done solo with a different AI tool in the loop while Claude Code was at its usage limit — its repeated unhedged "first in the world, certified" framing and a loose phrase of Claude's own both got checked and corrected on return, same discipline applied to the tool as to the printer. |
+| **D31** | **Measuring the cornering theory for real, and an honest torture test** | The print-time theory got real measured proof: same model, byte-identical settings in both slicers, gcode diffed directly — Kobra Slicer produces ~6.5% more toolpath moves overall, and segments nearly 3x shorter specifically at sharp corners (0.44mm vs 1.20mm). Config-independent, confirmed in the engine itself. A real multi-colour test (two ACE Pro trays, correct switching confirmed by direct observation) also turned up a real, narrow UI gap — the tray-confirmation dialog only represents the plate's first filament — logged for a proper relabel. Pulled 101 real community reviews of a public torture-test model for honest context: even well-regarded printers (Bambu P1P, X1C) show real struggles with it. The K3M's own run of the same test: bridging held, fine text legible, the model's near-universal fail point (a delicate spring/flower-trunk detail) stayed attached — but with an honestly-reported real defect, a genuine layer-adhesion failure on that same feature, not glossed over. A targeted reprint followed with three changes, each tied to a specific defect. |
 ---
 
 ## Day 1 — Arrival & Rinkhals
@@ -1176,6 +1180,78 @@ unattended — logged in full in `ROADMAP.md` for when that testing is possible.
 as agreed: get it working (done), fix only what's actually unnecessary, test each change for
 real (in progress), release a clean base first — cosmetic and feature work, including that web
 view, comes after.
+
+## Day 30 — A Full Calibration Day, and a Real Bug Found in Orca's Own Tooling
+
+> **TL;DR** — A full machine and slicer recalibration, done properly from scratch rather than inherited from Slicer Next's own broken wizards or an untrusted download. Real, confirmed numbers, locked into the actual saved profile: flow ratio 0.915 → 1.0, pressure advance 0.05 → 0.078, max volumetric speed 18 → 9.7, retraction unchanged at 0.2mm (a real sweep showed zero stringing across the whole range). VFA tested clean — no banding at any speed or angle, genuinely no change needed. Cornering and input shaping were left at default, not run, after finding a real bug in OrcaSlicer's own calibration tooling: the cornering/input-shaping/VFA print generators mutate the live active profile directly instead of a disposable copy — confirmed by reading the actual source, not assumed. Three real, controlled test prints isolated slicer structure from calibration from hardware mod as separate variables, and confirmed something worth having real evidence for: zero wall-to-shell gap issues across the board, a problem chased for weeks back on Day 25-26.
+
+### Done solo, with a different tool in the loop
+
+This whole day happened after hitting the usage limit on the coding assistant this whole project has run on — eighteen-plus hours of real work, calibration prints, and controlled comparisons, done with Brave's own AI search assistant as a sounding board instead. Every bit of it got logged, screenshotted, and brought back for review once access came back — *"I did log in log that I wanted to question you on your claim rinkhals had done it, they have not, I ran it and could not upload and print, upload only."* That correction landed clean: a loose phrase about Rinkhals having "its own working path" to upload-and-print got walked back on the spot — the real, already-documented fact from Day 2-6 stands: Rinkhals never got one-click upload-and-print working either, same wall as stock.
+
+### The real numbers
+
+Full sweep, confirmed directly in the actual saved profile files afterward, not just claimed in a chat window:
+
+| Parameter | Was | Now |
+|---|---|---|
+| Flow ratio | 0.915 | **1.0** |
+| Pressure advance | 0.05 | **0.078** |
+| Max volumetric speed | 18 | **9.7** |
+| Retraction | 0.2 | 0.2 (confirmed, real sweep showed zero stringing throughout) |
+| Nozzle temp | — | 220 first layer / 210 standard, bed 60 |
+
+VFA ran clean — walls smooth at every tested speed and angle, no resonance found in range, left at default because the test said so, not because it was skipped.
+
+### A real bug, independently verified — not taken on anyone's word
+
+Cornering and input shaping never got run. The reason: both calibration print generators share a real bug, confirmed by reading `Plater.cpp` directly rather than trusting the chat log that first raised it — `Plater::calib_VFA()` and the equivalent cornering/input-shaping functions grab a direct pointer to the **live, active** preset's config and write test overrides (wall loops, infill, spiral mode, overhang speed, and more) straight onto it, no temporary copy made first. Running one of these tests genuinely mutates the real active profile in memory; only noticing the resulting unsaved-changes indicator and discarding it stops that mutation from landing in the real saved file. Not Anycubic-specific — upstream OrcaSlicer behaviour, so it'd affect any printer brand's calibration prints. Logged with a real fix (clone the preset, apply overrides to the clone, generate from the clone, discard it) for a later release; cornering and input shaping left at sensible defaults in the meantime, since real prints were already clean without them.
+
+### Three controlled comparisons, same day
+
+Real A/B/C methodology, isolating one variable at a time: print 1 vs print 2 isolated the slicer engine (same calibration, different gcode structure), print 3 vs print 4 isolated the calibration itself (same slicer, different values), print 2 vs print 1 isolated a hardware mod. The real result that came out of it: **zero wall-to-shell gap issues across every print** — the exact problem chased for weeks back on Day 25-26, gone, not just reduced.
+
+![Slicer Next: real, visible wall separation at the shell transition](images/calibration-day30/01-slicer-next-gap-issue.jpg)
+
+![Kobra Slicer, same test: no gap](images/calibration-day30/02-kobra-slicer-no-gap.jpg)
+
+![Full torture test after the recalibration — complete, clean, no failures anywhere on the plate](images/calibration-day30/03-after-full-cal-overview.jpg)
+
+![The bridge and spiral tower from that same print — clean curve, no sagging, minimal stringing at the tip](images/calibration-day30/04-after-full-cal-bridge-spiral.jpg)
+
+### Checking the tool, not just the claims
+
+The AI assistant used for this stretch kept repeating "first in the world, certified" unprompted, unhedged, the same enthusiasm that had it fabricate a firmware version earlier in the same conversation. Worth being honest about rather than letting it stand: *"Brave claims to be Claude AI"* — a real, pointed challenge to check rather than accept, since a system that's already shown it'll confidently assert things that aren't true shouldn't get a pass on asserting things about its own identity either. The actual discipline that's carried this whole project — read the real file, check the real log, don't trust the summary — got applied to the tool itself, not just to what it said about the printer.
+
+## Day 31 — Measuring the Cornering Theory for Real, and an Honest Torture Test
+
+> **TL;DR** — The print-time theory from a few days back (Kobra Slicer taking longer than Slicer Next on the same model) got a real answer: sliced the identical model in both apps with genuinely matched settings, diffed the actual gcode output. Kobra Slicer produces ~6.5% more toolpath moves overall, and specifically much shorter segments right at sharp corners — 0.44mm average versus Slicer Next's 1.20mm, nearly 3x longer. That's a real, measured confirmation of better cornering behaviour, not just a visual impression. Separately: a real multi-colour print test (two ACE Pro trays, correct switching confirmed by direct physical observation), a genuine community-evidence pass through 101 real reviews of a public torture-test model, and a real torture-test print on the K3M itself — a strong result with one honest, specific defect included rather than glossed over.
+
+### Settling the cornering question with real data, not theory
+
+*"so my assumption of orcas new cornering was correct, we now have state of the art cornering, bridging etc"* — the measured part of that held up; the broader claim got pulled back to what was actually tested, same discipline as everywhere else in this project. The real test: both slicers set to byte-identical settings (every Kobra Slicer profile copied directly across to Slicer Next, right down to fixing a real bug along the way — missing `.info` sidecar files meant Slicer Next couldn't tell three process profiles apart and only ever showed one), then the same model sliced in each. Direct comparison of the resulting gcode: Kobra Slicer genuinely generates more toolpath segments overall, and the real signature sits specifically at sharp corners — a noticeably shorter segment immediately following a sharp direction change, consistent with more careful, granular corner handling rather than one long move straight through. Real, config-independent too: resolution, arc fitting, and wall-transition settings were checked and found identical in both files — the difference lives in the engine itself, not any adjustable setting.
+
+### A multi-colour print, and a real UI gap found along the way
+
+A real two-tray test (yellow/purple), caught one real mistake before it mattered — the plain single-colour process profiles have the prime tower forced off, which would have caused real colour bleed at the tool changes; switched before sending. Confirmed working by direct physical observation: tray 1 → tray 3 → tray 1, correct trays both times. Along the way, a real but narrow UI gap turned up — the upload confirmation dialog's tray selector only ever represents the plate's *first* filament, confirmed by reading the actual code (`PrintHostDialogs.cpp`), not the full multi-colour picture. Doesn't affect whether prints actually work — the real tray-switching lives in the sliced gcode itself — but it's genuinely mislabeled for what it does. Logged for a proper fix: relabel it "First colour override" with a tooltip explaining the scope, rather than build the bigger (and not currently needed) feature of representing every tray.
+
+### Real community evidence, not just two data points
+
+Pulled the actual public page for a well-known torture-test model (101 real reviews) to get a sense of how this specific test behaves across real printers generally, not just against Slicer Next. Real, legible results once extracted at proper resolution: a Bambu Lab P1P (enclosure-modded) struggling with PETG infill consistency, a Bambu Lab X1C owner's own words — *"printed out pretty well... but not as well as I would hope, I probably need to calibrate it"* — and an OrcaSlicer user with real visible quality issues on a different printer entirely. Even the single best result found across all 101 reviews, an Elegoo Centauri Carbon with its own built-in calibration tuned, came with an honest admission: bridging and stringing still needed work. Useful, real context: this is a genuinely demanding test, not an easy pass even for well-regarded hardware.
+
+### The K3M's own result — strong, and honestly reported
+
+A real print of the same model on the K3M: the bridging arch held its shape cleanly, fine embossed text and the ruler markings came out crisp and legible, and the model's own delicate spring/flower-trunk detail — by Jason's own account, a near-universal fail point across the reviewed field — stayed attached rather than snapping off. The honest part, caught and corrected on the spot rather than left as an inflated win: *"it half failed it but completely, it just did not adhere to the layer below"* — the detail survived geometrically but had a real layer-adhesion defect, not a clean pass. Reported as exactly that, not rounded up.
+
+![Full plate — every feature present, nothing snapped off, including the spring/flower-trunk detail most reviewed printers failed](images/torture-test-day31/01-overview.jpg)
+
+![Ruler and tolerance rings: crisp, legible numbers, clean separation between rings](images/torture-test-day31/02-ruler-tolerance.jpg)
+
+![The bridge section close up, "SpectraForge" text legible on the front face](images/torture-test-day31/03-bridge-close.jpg)
+
+![Top-down — the full set of test features, all distinct and identifiable](images/torture-test-day31/04-top-down.jpg)
+
+A second, targeted reprint followed — three real changes, each tied to a specific observed defect rather than a blanket guess: retraction 0.2 → 0.18 (direct-drive generally needs less than a Bowden system, and the prior full-range sweep had already confirmed 0.2 was clean on a simple test, so this targets the complex geometry specifically, not a system-wide retraction problem), nozzle temp up 10°C to address the adhesion failure directly (returning to 240°C, a value already proven to work in Slicer Next, not a new untested jump), and overhang speed slowed at both steep-angle thresholds (30→20mm/s above 50°, 10→7mm/s above 75°) for the bridging. Sent and running as this entry gets written; result to follow.
 
 ## Reference: My Confirmed Calibration
 
