@@ -1243,6 +1243,8 @@ Pulled the actual public page for a well-known torture-test model (101 real revi
 
 A real print of the same model on the K3M: the bridging arch held its shape cleanly, fine embossed text and the ruler markings came out crisp and legible, and the model's own delicate spring/flower-trunk detail — by Jason's own account, a near-universal fail point across the reviewed field — stayed attached rather than snapping off. The honest part, caught and corrected on the spot rather than left as an inflated win: *"it half failed it but completely, it just did not adhere to the layer below"* — the detail survived geometrically but had a real layer-adhesion defect, not a clean pass. Reported as exactly that, not rounded up.
 
+Also real and unplanned, not a designed-in test: the black spool ran out mid-print, more than five minutes of real downtime before it got noticed and swapped to blue. Flawless recovery — no visible seam, no layer-adhesion gap at the colour change, the print just continued cleanly from where it stopped. A genuine unplanned-failure-recovery data point, not a scripted multi-colour test like the ACE Pro tray one — arguably the more meaningful resilience result of the two.
+
 ![Full plate — every feature present, nothing snapped off, including the spring/flower-trunk detail most reviewed printers failed](images/torture-test-day31/01-overview.jpg)
 
 ![Ruler and tolerance rings: crisp, legible numbers, clean separation between rings](images/torture-test-day31/02-ruler-tolerance.jpg)
