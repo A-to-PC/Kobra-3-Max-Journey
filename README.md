@@ -1335,6 +1335,8 @@ Seven of the nine tubes fell during the night, each at the start of its own thre
 
 Worth being precise about what this is and isn't: not a slicer fault, not a printer fault — the machine executed exactly what it was told to, cleanly, the same as every other confirmed-good feature on this same plate. This is a real, specific, self-owned setup mistake (an unverified manual edit), not a reliability finding about Kobra Slicer or the K3M. All 9 tubes are still genuinely usable for their actual purpose (organising magnets, no real load on them) — confirmed uniform, undeformed circles, magnets sliding freely in every one. Only the lid thread itself is affected: fully working on 2 of the 9, not on the other 7.
 
+The real lesson, worth keeping plainly: check that brims actually connect, don't just trust that drawing ears onto the plate means they're good. A brim-ear gap setting that looks reasonable in the slicer's preview can still leave a real, physical gap once printed — manually placed support only counts once it's actually confirmed touching the model, not just painted in and assumed.
+
 ## Reference: My Confirmed Calibration
 
 > Every value below is confirmed against a real, physical print on this one printer, with this one filament — not a slicer default, not a guess, but also not a universal number for every Kobra 3 Max. Different filament, a different unit off the line, or a different environment will all shift these. Treat the table as a worked example of the process and a realistic starting point, not a number to copy in blind — run the same sweeps on your own machine and filament before trusting a print to them. Confirmed [Day 12](#day-12--clean-prints-for-real).
