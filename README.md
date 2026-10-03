@@ -1377,9 +1377,9 @@ Inside the poop catcher, a cloth baffle stops purge strings rebounding back onto
 
 The top front of the poop catcher houses the W3230 temperature controller, driving an active 12V exhaust fan set to trigger at 28°C. Lighting is a dimmable, switched 4000K COB LED strip. An arm-mounted 1080p EZVIZ camera handles timelapse duty — the real camera behind [Kobra Time Lapse](https://github.com/A-to-PC/Kobra-Time-Lapse)'s footage. A filtered inlet routes fresh air specifically under the printer for PSU cooling while it's running.
 
-### ACE Pro and the roller-bearing tube pass-through
+### ACE Pro and the silicone-tube pass-through
 
-The ACE Pro sits on top of the whole enclosure rather than beside it, with its filament tubes running down in through the top. They pass through a roller bearing at the entry point, so the tubes can move smoothly with the toolhead's own Z travel instead of dragging or kinking against a fixed opening.
+The ACE Pro sits on top of the whole enclosure rather than beside it, with its filament tubes running down in through the top. A roller/linear bearing was the first idea here, ruled out quickly — it needs a hard, precisely round shaft to ride on, and a bundle of soft PTFE tubes is neither, risking abrading them rather than guiding them. Landed on something simpler instead: a single length of soft, low-durometer silicone tube over the tube bundle at the roof, mounted via an interference fit rather than glued so it stays serviceable. Silicone's own softness lets the bundle move smoothly with the toolhead's Z travel and bends gradually along its length instead of the tubes kinking against a hard edge — see the full build-out further down for the real sizing and routing detail.
 
 ### The touchscreen moves outside the enclosure
 
